@@ -27,12 +27,12 @@ class MainMenu extends StatefulWidget {
 }
 
 class _MainMenuState extends State<MainMenu> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
 
   final List<Widget> _pages = [
     ProgressPage(),
     HomePage(),
-    ProfilPage(),
+    ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
