@@ -28,6 +28,7 @@ class MainMenu extends StatefulWidget {
 
 class _MainMenuState extends State<MainMenu> {
   int _selectedIndex = 1;
+  final PageController _pageController = PageController(initialPage: 1);
 
   final List<Widget> _pages = [
     ProgressPage(),
@@ -36,6 +37,17 @@ class _MainMenuState extends State<MainMenu> {
   ];
 
   void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    _pageController.animateToPage(
+      index,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _onPageChanged(int index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -54,32 +66,33 @@ class _MainMenuState extends State<MainMenu> {
             color: Colors.white70,
           ),
         ),
-
         centerTitle: true,
         flexibleSpace: Container(
-        decoration: BoxDecoration(
-        gradient: LinearGradient(
-        colors: [
-        Colors.green, // Başlangıç rengi
-        Colors.greenAccent, // Bitiş rengi
-        ],
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.green, // Başlangıç rengi
+                Colors.greenAccent, // Bitiş rengi
+              ],
+            ),
+          ),
+        ),
       ),
-    ),
-    ),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: _onPageChanged,
+        children: _pages,
       ),
-      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.analytics),
             label: 'Takip',
           ),
-
           BottomNavigationBarItem(
-            icon: Icon(Icons.home,size: 45),
+            icon: Icon(Icons.home, size: 45),
             label: 'Ana Sayfa',
           ),
-
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profil',

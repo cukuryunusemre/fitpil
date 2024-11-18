@@ -105,58 +105,6 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         });
-
-        // Dialog(
-        //   shape: RoundedRectangleBorder(
-        //     borderRadius: BorderRadius.circular(16),
-        //   ),
-        //   child: Container(
-        //     padding: EdgeInsets.all(16),
-        //     height: MediaQuery.of(context).size.height *
-        //         0.6, // İstediğiniz yüksekliği ayarlayın
-        //     width: MediaQuery.of(context).size.width *
-        //         0.95, // Ekranın %80'i kadar genişlik
-        //     child: Column(
-        //       mainAxisSize: MainAxisSize.min,
-        //       children: [
-        //         Text(
-        //           "Kalori Hesaplayıcı",
-        //           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        //         ),
-        //         SizedBox(height: 20),
-        //         TextField(
-        //           controller: fat_percentage,
-        //           decoration: InputDecoration(labelText: "Yağ Oranı"),
-        //         ),
-        //         SizedBox(
-        //           height: 10.0,
-        //         ),
-        //         TextField(
-        //           controller: body_weight,
-        //           decoration: InputDecoration(labelText: "Vücut Ağırlığı"),
-        //         ),
-        //         DropdownButton<int>(
-        //             value: selectedIndex,
-        //             hint: Text("Aktiviye Seviyenizi Seçin."),
-        //             isExpanded: true,
-        //             items: activity_level.asMap().entries.map((entry) {
-        //               int index = entry.key;
-        //               String value = entry.value;
-        //
-        //               return DropdownMenuItem<int>(
-        //                 value: index,
-        //                 child: Text(value),
-        //               );
-        //             }).toList(),
-        //             onChanged: (int? value) {
-        //               setState(() {
-        //                 selectedIndex = value;
-        //               });
-        //             })
-        //       ],
-        //     ),
-        //   ),
-        // );
       },
     );
   }
