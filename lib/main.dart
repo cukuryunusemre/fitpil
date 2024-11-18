@@ -30,9 +30,9 @@ class _MainMenuState extends State<MainMenu> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
+    ProgressPage(),
     HomePage(),
-    profilPage(),
-    progressPage(),
+    ProfilPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -44,16 +44,39 @@ class _MainMenuState extends State<MainMenu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Fitpil'),),
+      appBar: AppBar(
+        title: Text(
+          'Fit Pill',
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Pacifico',
+            color: Colors.white70,
+          ),
+        ),
+
+        centerTitle: true,
+        flexibleSpace: Container(
+        decoration: BoxDecoration(
+        gradient: LinearGradient(
+        colors: [
+        Colors.green, // Başlangıç rengi
+        Colors.greenAccent, // Bitiş rengi
+        ],
+      ),
+    ),
+    ),
+      ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.people),
+            icon: Icon(Icons.analytics),
             label: 'Takip',
           ),
+
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home,size: 45),
             label: 'Ana Sayfa',
           ),
 
@@ -63,7 +86,8 @@ class _MainMenuState extends State<MainMenu> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Colors.lightGreenAccent[700],
+        unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
       ),
     );
