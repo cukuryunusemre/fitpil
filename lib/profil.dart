@@ -29,8 +29,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
   File? _profileImage;
 
-  final String fatPercentage = " "; // Yağ oranı değeri
-  final String BMI = " "; // BMI değeri
+  final String fatPercentage = "Bilgi Yok"; // Yağ oranı değeri
+  final String BMI = "Bilgi Yok"; // BMI değeri
+  final String Kcal = "Bilgi Yok"; // Günlük Kalori değeri
 
   bool isEditMode = false; // Düzenleme modu
 
@@ -133,19 +134,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           int.tryParse(value) == null) {
                         return 'Geçerli bir $label giriniz.';
                       }
-                      if (label == 'Yaş' && (int.tryParse(value)! <= 0 || int.tryParse(value)! > 100)) {
-                        return 'Geçerli bir $label giriniz.';
-                      }
-                      if ((label == 'Kilo (kg)') && (int.tryParse(value)! <= 0 || int.tryParse(value)! > 635 )) {
-                        return 'Geçerli bir $label giriniz.';
-                      }
-                      if (label == 'Boy (cm)' && (int.tryParse(value)! <= 0 || int.tryParse(value)! > 250 )){
-                        return 'Geçerli bir $label giriniz.';
-                      }
                       return null;
                     },
                   ),
-
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
@@ -168,84 +159,107 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                GestureDetector(
-                  onTap: _showImageSourceSheet,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            GestureDetector(
+              onTap: _showImageSourceSheet,
+              child: CircleAvatar(
+                radius: 60,
+                backgroundImage: _profileImage != null
+                    ? FileImage(_profileImage!)
+                    : AssetImage('images/user_icon.png') as ImageProvider,
+                child: Align(
+                  alignment: Alignment.bottomRight,
                   child: CircleAvatar(
-                    radius: 60,
-                    backgroundImage: _profileImage != null
-                        ? FileImage(_profileImage!)
-                        : AssetImage('images/user_icon.png') as ImageProvider,
-                    child: Align(
-                      alignment: Alignment.bottomRight,
-                      child: CircleAvatar(
-                        backgroundColor: Colors.blue,
-                        radius: 18,
-                        child: Icon(
-                          Icons.camera_alt,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                      ),
+                    backgroundColor: Colors.blue,
+                    radius: 18,
+                    child: Icon(
+                      Icons.camera_alt,
+                      color: Colors.white,
+                      size: 18,
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
-                _buildInfoTile('Ad Soyad', nameController.text, 'Ad Soyad', nameController),
-                _buildInfoTile('Yaş', ageController.text, 'Yaş', ageController),
-                _buildInfoTile('Boy (cm)', heightController.text, 'Boy (cm)', heightController),
-                _buildInfoTile('Kilo (kg)', weightController.text, 'Kilo (kg)', weightController),
-                _buildReadOnlyTile('Yağ Oranı', fatPercentage),
-                _buildReadOnlyTile('Vücut Kitle İndeksi (BMI)', BMI),
+              ),
+            ),
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  nameController.text.isEmpty ? 'İsim Soyisim' : nameController.text,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                if (isEditMode)
+                  IconButton(
+                    icon: Icon(Icons.edit, color: Colors.blue),
+                    onPressed: () => _editField('Ad Soyad', nameController),
+                  ),
               ],
             ),
-          ),
-          Positioned(
-            top: 16,
-            right: 16,
-            child: FloatingActionButton(
-              mini: true,
-              backgroundColor: isEditMode ? Colors.green : Colors.blue,
-              child: Icon(isEditMode ? Icons.done : Icons.edit),
-              onPressed: () {
-                setState(() {
-                  isEditMode = !isEditMode; // Düzenleme modunu aç/kapat
-                });
-              },
+            SizedBox(height: 20),
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 3, // Sağlı sollu üç sütun
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                children: [
+                  _buildInfoTile('Yaş', ageController.text, 'Yaş', ageController),
+                  _buildInfoTile('Boy (cm)', heightController.text, 'Boy (cm)', heightController),
+                  _buildInfoTile('Kilo (kg)', weightController.text, 'Kilo (kg)', weightController),
+                  _buildReadOnlyTile('Yağ Oranı', fatPercentage),
+                  _buildReadOnlyTile('BMI', BMI),
+                  _buildReadOnlyTile('Günlük Kalori', Kcal),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        mini: true,
+        backgroundColor: isEditMode ? Colors.green : Colors.blue,
+        child: Icon(isEditMode ? Icons.done : Icons.edit),
+        onPressed: () {
+          setState(() {
+            isEditMode = !isEditMode; // Düzenleme modunu aç/kapat
+          });
+        },
       ),
     );
   }
 
   Widget _buildInfoTile(String title, String value, String label, TextEditingController controller) {
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 8.0),
-      child: ListTile(
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.w600)),
-        subtitle: Text(value.isEmpty ? 'Bilgi Yok' : value, style: TextStyle(color: Colors.grey[600])),
-        trailing: isEditMode
-            ? IconButton(
-          icon: Icon(Icons.edit),
-          onPressed: () => _editField(label, controller),
-        )
-            : null,
+      margin: EdgeInsets.all(4.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(title, style: TextStyle(fontWeight: FontWeight.w600)),
+          SizedBox(height: 8),
+          Text(value.isEmpty ? 'Bilgi Yok' : value, style: TextStyle(color: Colors.grey[600])),
+          if (isEditMode)
+            IconButton(
+              icon: Icon(Icons.edit, color: Colors.blue),
+              onPressed: () => _editField(label, controller),
+            ),
+        ],
       ),
     );
   }
 
   Widget _buildReadOnlyTile(String title, String value) {
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 8.0),
-      child: ListTile(
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.w600)),
-        subtitle: Text(value, style: TextStyle(color: Colors.grey[600])),
+      margin: EdgeInsets.all(4.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(title, style: TextStyle(fontWeight: FontWeight.w600)),
+          SizedBox(height: 8),
+          Text(value, style: TextStyle(color: Colors.grey[600])),
+        ],
       ),
     );
   }
