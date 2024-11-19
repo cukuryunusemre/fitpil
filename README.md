@@ -1,4 +1,4 @@
-# fitpil
+# fitpill
 
 A new Flutter project.
 
