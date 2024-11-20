@@ -13,7 +13,50 @@ class _HomePageState extends State<HomePage> {
     return Padding(
       padding: EdgeInsets.all(8.0),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.9,
+            height: 170.0,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.zero,
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+              ),
+              onPressed: () {
+                //workoutRoutinePage(context);
+              },
+              child: Ink(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.black, Colors.red],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.fitness_center,
+                          color: Colors.white54, size: 50.0), // İlk child
+                      SizedBox(
+                        height: 16.0,
+                      ),
+                      Text(
+                        "Antrenman Rutini", // İkinci child
+                        style: TextStyle(color: Colors.white54, fontSize: 20.0),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 16.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -61,7 +104,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   onPressed: () {
-                    // showFatRatePage(context);
+                    showFatRatePage(context);
                   },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -81,6 +124,9 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ],
+          ),
+          SizedBox(
+            height: 16.0,
           ),
         ],
       ),

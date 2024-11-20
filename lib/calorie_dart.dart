@@ -62,10 +62,10 @@ void showCaloriePage(BuildContext context) {
                                 style: TextStyle(color: Colors.lightGreen),
                               ),
                               content: Text(
-                                "Girilen yağ oranı ve vücut kütlesi ile bmr (bazal metabolizma hızı) ve "
-                                "günlük almanız gereken kalori ihtiyacınız hesaplanır."
-                                "Kilo vermek için günlük almanız gereken kalori ihtiyacınızın %15 azını, "
-                                "kilo almak için ise %10 fazlasını alabilirsiniz.\nBu hesaplamada Katch-McArdle Formülü kullanılmıştır.",
+                                "Girilen yağ oranı ve vücut kütlesiyle BMR (bazal metabolizma hızı) "
+                                "ve günlük kalori ihtiyacınız hesaplanır. Kilo vermek için "
+                                "bu ihtiyacın %15 eksiğini, kilo almak için %10 fazlasını "
+                                "alabilirsiniz.\nHesaplamada Katch-McArdle Formülü kullanılmaktadır.",
                                 style: TextStyle(fontSize: 15.0, height: 1.5),
                               ),
                               actions: [
