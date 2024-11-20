@@ -83,7 +83,7 @@ void showFatRatePage(BuildContext context) {
                       ],
                     ),
                     SizedBox(
-                      height: 16.0,
+                      height: 6.0,
                     ),
                     Text(
                       "Cinsiyet",
@@ -128,7 +128,7 @@ void showFatRatePage(BuildContext context) {
                         });
                       },
                     ),
-                    SizedBox(height: 8.0),
+                    SizedBox(height: 6.0),
                     TextField(
                       controller: _neckController,
                       keyboardType: TextInputType.number,
@@ -139,7 +139,7 @@ void showFatRatePage(BuildContext context) {
                         });
                       },
                     ),
-                    SizedBox(height: 8.0),
+                    SizedBox(height: 6.0),
                     TextField(
                       controller: _waistController,
                       keyboardType: TextInputType.number,
@@ -150,7 +150,7 @@ void showFatRatePage(BuildContext context) {
                         });
                       },
                     ),
-                    SizedBox(height: 8.0),
+                    SizedBox(height: 6.0),
                     if (_selectedOption == "Kadın")
                       TextField(
                         controller: _hipController,
@@ -191,7 +191,7 @@ void _calculateFatRate(StateSetter setState) {
     if (_heightController.text.isEmpty ||
         _neckController.text.isEmpty ||
         _waistController.text.isEmpty ||
-        _hipController.text.isEmpty) {
+        (_selectedOption == "Kadın" && _hipController.text.isEmpty)) {
       _resultController.text = "";
     } else if (height < 100 ||
         height > 260 ||
@@ -199,21 +199,28 @@ void _calculateFatRate(StateSetter setState) {
         neck > 70 ||
         waist < 30 ||
         waist > 250 ||
-        hip < 30 ||
-        hip > 250) {
+        (_selectedOption == "Kadın" &&
+            (hip < 30 || hip > 250 || (hip <= neck))) ||
+        (waist <= neck)) {
       _resultController.text = "Lütfen Geçerli Değerler Giriniz";
     } else if (_selectedOption == "Erkek") {
       bodyFat = 86.010 * (log(waist - neck) / log(10)) -
           70.041 * (log(height) / log(10)) +
           36.76;
-
-      _resultController.text = "${bodyFat.toStringAsFixed(1)}%";
-    } else if (_selectedOption == "Kadın") {
+      if (bodyFat < 0) {
+        _resultController.text = "Lütfen Geçerli Değerler Giriniz";
+      } else {
+        _resultController.text = "${bodyFat.toStringAsFixed(1)}%";
+      }
+    } else if (_selectedOption == "Kadın" && _hipController.text.isNotEmpty) {
       bodyFat = 163.205 * (log(waist + hip - neck) / log(10)) -
           97.684 * (log(height) / log(10)) -
           78.387;
-
-      _resultController.text = "${bodyFat.toStringAsFixed(1)}%";
+      if (bodyFat < 0) {
+        _resultController.text = "Lütfen Geçerli Değerler Giriniz";
+      } else {
+        _resultController.text = "${bodyFat.toStringAsFixed(1)}%";
+      }
     }
   });
 }
