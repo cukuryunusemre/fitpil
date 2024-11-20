@@ -175,6 +175,9 @@ void showFatRatePage(BuildContext context) {
                             labelText: "Yağ Oranı",
                             border: OutlineInputBorder(),
                           ),
+                        ),
+                        SizedBox(
+                          height: 6.0,
                         )
                       ],
                     ),
