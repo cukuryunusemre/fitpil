@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-String? _selectedOption = "Erkek";
+String _selectedOption = "Erkek";
 final TextEditingController _heightController = TextEditingController();
 final TextEditingController _neckController = TextEditingController();
 final TextEditingController _waistController = TextEditingController();
@@ -26,7 +26,7 @@ void showFatRatePage(BuildContext context) {
               ),
               child: Container(
                   padding: EdgeInsets.all(16),
-                  width: MediaQuery.of(context).size.width * 0.8,
+                  width: MediaQuery.of(context).size.width * 0.85,
                   height: MediaQuery.of(context).size.height * 0.6,
                   child: SingleChildScrollView(
                     child: Column(
@@ -34,7 +34,7 @@ void showFatRatePage(BuildContext context) {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
                               "Yağ Oranı Hesaplayıcı",
@@ -95,30 +95,82 @@ void showFatRatePage(BuildContext context) {
                         ),
                         Row(
                           children: [
-                            Radio<String>(
-                              value: "Erkek",
-                              groupValue: _selectedOption,
-                              onChanged: (value) {
-                                setState(
-                                  () {
-                                    _selectedOption = value;
-                                  },
-                                );
+                            SegmentedButton<String>(
+                              segments: <ButtonSegment<String>>[
+                                ButtonSegment<String>(
+                                  value: "Erkek",
+                                  label: Container(
+                                    width: 75.0,
+                                    child: Icon(
+                                      Icons.man,
+                                      size: 40,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ),
+                                ButtonSegment<String>(
+                                  value: "Kadın",
+                                  label: Container(
+                                    width: 75.0,
+                                    child: Icon(
+                                      Icons.woman,
+                                      size: 40,
+                                      color: Colors.pinkAccent,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              selected: <String>{_selectedOption},
+                              style: ButtonStyle(
+                                side: MaterialStateProperty.resolveWith<
+                                    BorderSide?>((states) {
+                                  if (states.contains(MaterialState.selected)) {
+                                    return BorderSide.none;
+                                  }
+                                  return BorderSide.none;
+                                }),
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith<Color?>(
+                                        (states) {
+                                  if (states.contains(MaterialState.selected)) {
+                                    return Colors
+                                        .lightGreen; // Seçili buton rengi
+                                  }
+                                  return Colors
+                                      .grey[300]; // Varsayılan buton rengi
+                                }),
+                              ),
+                              onSelectionChanged: (Set<String> newSelection) {
+                                setState(() {
+                                  _selectedOption = newSelection.first;
+                                });
                               },
-                            ),
-                            Text("Erkek"),
-                            Radio<String>(
-                              value: "Kadın",
-                              groupValue: _selectedOption,
-                              onChanged: (value) {
-                                setState(
-                                  () {
-                                    _selectedOption = value;
-                                  },
-                                );
-                              },
-                            ),
-                            Text("Kadın"),
+                              showSelectedIcon: false,
+                            )
+                            // Radio<String>(
+                            //   value: "Erkek",
+                            //   groupValue: _selectedOption,
+                            //   onChanged: (value) {
+                            //     setState(
+                            //       () {
+                            //         _selectedOption = value;
+                            //       },
+                            //     );
+                            //   },
+                            // ),
+                            // Text("Erkek"),
+                            // Radio<String>(
+                            //   value: "Kadın",
+                            //   groupValue: _selectedOption,
+                            //   onChanged: (value) {
+                            //     setState(
+                            //       () {
+                            //         _selectedOption = value;
+                            //       },
+                            //     );
+                            //   },
+                            // ),
+                            // Text("Kadın"),
                           ],
                         ),
                         TextField(
@@ -178,7 +230,7 @@ void showFatRatePage(BuildContext context) {
                         ),
                         SizedBox(
                           height: 6.0,
-                        )
+                        ),
                       ],
                     ),
                   )),
