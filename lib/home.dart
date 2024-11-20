@@ -1,6 +1,7 @@
 import 'package:fitpil/calorie_dart.dart';
 import 'package:fitpil/fat_rate.dart';
 import 'package:flutter/material.dart';
+import 'package:pedometer/pedometer.dart'; // Adım sayar paketi
 
 class HomePage extends StatefulWidget {
   @override
@@ -8,124 +9,197 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late Stream<StepCount> _stepCountStream;
+  int _steps = 0; // Adım sayacı
+
+  @override
+  void initState() {
+    super.initState();
+    _initPedometer();
+  }
+
+  void _initPedometer() {
+    _stepCountStream = Pedometer.stepCountStream;
+    _stepCountStream.listen(_onStepCount).onError(_onStepCountError);
+  }
+
+  void _onStepCount(StepCount event) {
+    setState(() {
+      _steps = event.steps;
+    });
+  }
+
+  void _onStepCountError(error) {
+    print("Adım sayar hatası: $error");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.9,
-            height: 170.0,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.zero,
-                backgroundColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-              ),
-              onPressed: () {
-                // Antrenman Rutini sayfasını açabilirsiniz.
-              },
-              child: Ink(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.black, Colors.red],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
+      child: SingleChildScrollView( // Taşmayı önlemek için kaydırılabilir yapı
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            SizedBox(height: 10.0),
+
+            // Adım Sayar Butonu
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: 170.0,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
                 ),
-                child: Container(
-                  alignment: Alignment.center,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.fitness_center,
-                        color: Colors.white54,
-                        size: 50.0,
-                      ),
-                      SizedBox(height: 16.0),
-                      Text(
-                        "Antrenman Rutini",
-                        style: TextStyle(color: Colors.white54, fontSize: 20.0),
-                      ),
-                    ],
+                onPressed: () {
+                  // Adım sayar butonuna tıklama işlemi
+                },
+                child: Ink(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.blue, Colors.lightBlue],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.directions_walk,
+                          color: Colors.white,
+                          size: 50.0,
+                        ),
+                        SizedBox(height: 16.0),
+                        Text(
+                          "$_steps Adım",
+                          style: TextStyle(color: Colors.white, fontSize: 20.0),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          SizedBox(height: 16.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.4,
-                height: 170.0,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightGreen,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+            SizedBox(height: 16.0),
+            // Antrenman Rutini Butonu
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: 170.0,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                ),
+                onPressed: () {
+
+                },
+                child: Ink(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.black, Colors.red],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  onPressed: () {
-                    showCaloriePage(context);
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.restaurant,
-                        color: Colors.white,
-                        size: 40.0,
-                      ),
-                      SizedBox(height: 10.0),
-                      Text(
-                        "Kalori",
-                        style: TextStyle(color: Colors.white, fontSize: 16.0),
-                      ),
-                    ],
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.fitness_center,
+                          color: Colors.white54,
+                          size: 50.0,
+                        ),
+                        SizedBox(height: 16.0),
+                        Text(
+                          "Antrenman Rutini",
+                          style: TextStyle(color: Colors.white54, fontSize: 20.0),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-              SizedBox(width: 16.0),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.4,
-                height: 170.0,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightGreen,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+            ),
+            SizedBox(height: 16.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  height: 170.0,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.lightGreen,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {
+                      showCaloriePage(context);
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.restaurant,
+                          color: Colors.white,
+                          size: 40.0,
+                        ),
+                        SizedBox(height: 10.0),
+                        Text(
+                          "Kalori",
+                          style: TextStyle(color: Colors.white, fontSize: 16.0),
+                        ),
+                      ],
                     ),
                   ),
-                  onPressed: () {
-                    showFatRatePage(context);
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.water_drop,
-                        color: Colors.white,
-                        size: 40.0,
+                ),
+                SizedBox(width: 16.0),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  height: 170.0,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.lightGreen,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      SizedBox(height: 10.0),
-                      Text(
-                        "Yağ Oranı",
-                        style: TextStyle(color: Colors.white, fontSize: 16.0),
-                      ),
-                    ],
+                    ),
+                    onPressed: () {
+                      showFatRatePage(context);
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.water_drop,
+                          color: Colors.white,
+                          size: 40.0,
+                        ),
+                        SizedBox(height: 10.0),
+                        Text(
+                          "Yağ Oranı",
+                          style: TextStyle(color: Colors.white, fontSize: 16.0),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16.0),
-        ],
+              ],
+            ),
+            SizedBox(height: 16.0),
+          ],
+        ),
       ),
     );
   }

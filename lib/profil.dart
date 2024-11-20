@@ -134,6 +134,15 @@ class _ProfilePageState extends State<ProfilePage> {
                           int.tryParse(value) == null) {
                         return 'Geçerli bir $label giriniz.';
                       }
+                      if (label == 'Yaş' && (int.tryParse(value)! <= 0 || int.tryParse(value)! > 100)) {
+                        return 'Geçerli bir $label giriniz.';
+                      }
+                      if ((label == 'Kilo (kg)') && (int.tryParse(value)! <= 0 || int.tryParse(value)! > 635 )) {
+                        return 'Geçerli bir $label giriniz.';
+                      }
+                      if (label == 'Boy (cm)' && (int.tryParse(value)! <= 0 || int.tryParse(value)! > 250 )){
+                        return 'Geçerli bir $label giriniz.';
+                      }
                       return null;
                     },
                   ),
