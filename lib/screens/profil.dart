@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MyApp());
@@ -35,6 +36,41 @@ class _ProfilePageState extends State<ProfilePage> {
 
   bool isEditMode = false; // Düzenleme modu
 
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+  }
+
+  Future<void> _loadProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      nameController.text = prefs.getString('name') ?? '';
+      ageController.text = prefs.getString('age') ?? '';
+      heightController.text = prefs.getString('height') ?? '';
+      weightController.text = prefs.getString('weight') ?? '';
+
+      String? imagePath = prefs.getString('profile_image');
+      if (imagePath != null && imagePath.isNotEmpty) {
+        _profileImage = File(imagePath);
+      }
+    });
+  }
+
+  Future<void> _saveProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString('name', nameController.text);
+    await prefs.setString('age', ageController.text);
+    await prefs.setString('height', heightController.text);
+    await prefs.setString('weight', weightController.text);
+
+    if (_profileImage != null) {
+      await prefs.setString('profile_image', _profileImage!.path);
+    }
+  }
+
   void _showImageSourceSheet() {
     showModalBottomSheet(
       context: context,
@@ -65,6 +101,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     setState(() {
                       _profileImage = File(pickedFile.path);
                     });
+                    await _saveProfileData();
                   }
                 },
               ),
@@ -79,6 +116,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     setState(() {
                       _profileImage = File(pickedFile.path);
                     });
+                    await _saveProfileData();
                   }
                 },
               ),
@@ -127,30 +165,15 @@ class _ProfilePageState extends State<ProfilePage> {
                       if (value == null || value.isEmpty) {
                         return '$label boş olamaz.';
                       }
-                      if (label == 'Ad Soyad' && !RegExp(r'^[a-zA-ZğüşöçİĞÜŞÖÇ\s]+$').hasMatch(value)) {
-                        return 'Geçerli bir $label giriniz.';
-                      }
-                      if ((label == 'Yaş' || label == 'Boy (cm)' || label == 'Kilo (kg)') &&
-                          int.tryParse(value) == null) {
-                        return 'Geçerli bir $label giriniz.';
-                      }
-                      if (label == 'Yaş' && (int.tryParse(value)! <= 0 || int.tryParse(value)! > 100)) {
-                        return 'Geçerli bir $label giriniz.';
-                      }
-                      if ((label == 'Kilo (kg)') && (int.tryParse(value)! <= 0 || int.tryParse(value)! > 635 )) {
-                        return 'Geçerli bir $label giriniz.';
-                      }
-                      if (label == 'Boy (cm)' && (int.tryParse(value)! <= 0 || int.tryParse(value)! > 250 )){
-                        return 'Geçerli bir $label giriniz.';
-                      }
                       return null;
                     },
                   ),
                   SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (formKey.currentState!.validate()) {
                         setState(() {});
+                        await _saveProfileData();
                         Navigator.pop(context);
                       }
                     },

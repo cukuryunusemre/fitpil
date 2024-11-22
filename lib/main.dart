@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'home.dart';
-import 'profil.dart';
-import 'progress_page.dart';
+import 'screens/home.dart';
+import 'screens/profil.dart';
+import 'screens/progress_page.dart';
 import 'dart:async';
+import 'menu.dart';
 
 void main() {
   runApp(MyApp());
@@ -100,9 +101,12 @@ class _MainMenuState extends State<MainMenu> {
     });
   }
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -123,13 +127,22 @@ class _MainMenuState extends State<MainMenu> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Colors.green, // Başlangıç rengi
-                Colors.greenAccent, // Bitiş rengi
+                Colors.green,
+                Colors.greenAccent,
               ],
             ),
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () {
+              _scaffoldKey.currentState?.openEndDrawer();  // Sağdaki menüyü aç
+            },
+          ),
+        ],
       ),
+      endDrawer: MenuDrawer(),
       body: PageView(
         controller: _pageController,
         onPageChanged: _onPageChanged,

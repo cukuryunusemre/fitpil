@@ -2,7 +2,7 @@ import 'package:fitpil/calorie_dart.dart';
 import 'package:fitpil/fat_rate.dart';
 import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart'; // Adım sayar paketi
-import 'step_page.dart';
+import '../step_page.dart';
 
 class HomePage extends StatefulWidget {
   @override

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fl_chart/fl_chart.dart'; // Grafik kütüphanesi
 import 'package:pedometer/pedometer.dart';
 
 class StepTrackerPage extends StatefulWidget {
@@ -8,12 +10,13 @@ class StepTrackerPage extends StatefulWidget {
 
 class _StepTrackerPageState extends State<StepTrackerPage> {
   late Stream<StepCount> _stepCountStream;
-  int _todaySteps = 0; // Bugünkü adım
-  final int _stepGoal = 5000; // Günlük hedef
+  int _todaySteps = 0;
+  List<int> _weeklySteps = List.filled(7, 0); // Haftanın her günü için adımlar
 
   @override
   void initState() {
     super.initState();
+    _loadSavedSteps();
     _initPedometer();
   }
 
@@ -24,92 +27,132 @@ class _StepTrackerPageState extends State<StepTrackerPage> {
 
   void _onStepCount(StepCount event) {
     setState(() {
-      _todaySteps = event.steps; // Bugünkü adımları güncelle
+      _todaySteps = event.steps;
     });
+    _saveSteps();
   }
 
   void _onStepCountError(error) {
-    print("Adım sayar hatası: $error");
+    debugPrint('Step counter error: $error');
+  }
+
+  Future<void> _loadSavedSteps() async {
+    final prefs = await SharedPreferences.getInstance();
+    final lastDate = prefs.getString('lastResetDate') ?? DateTime.now().toString();
+    final savedWeeklySteps = prefs.getStringList('weeklySteps')?.map((e) => int.parse(e)).toList() ?? List.filled(7, 0);
+
+    final currentDate = DateTime.now();
+
+    // Günlük sıfırlama
+    if (DateTime.parse(lastDate).day != currentDate.day) {
+      setState(() {
+        int dayIndex = currentDate.weekday - 1; // Haftanın günü (1=Monday, 7=Sunday)
+        _weeklySteps[dayIndex] = _todaySteps;
+        _todaySteps = 0;
+      });
+
+      prefs.setString('lastResetDate', currentDate.toString());
+      prefs.setStringList('weeklySteps', _weeklySteps.map((e) => e.toString()).toList());
+    }
+
+    setState(() {
+      _weeklySteps = savedWeeklySteps;
+    });
+  }
+
+  Future<void> _saveSteps() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setStringList('weeklySteps', _weeklySteps.map((e) => e.toString()).toList());
   }
 
   @override
   Widget build(BuildContext context) {
-    double progress = (_todaySteps / _stepGoal).clamp(0.0, 1.0); // Yüzdesel ilerleme
-    int percentage = (progress * 100).toInt(); // Yuvarlanmış yüzde
-
     return Scaffold(
       appBar: AppBar(
-        title: Text("Adım Takibi"),
+        title: Text('Adım Takibi ve Analiz'),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: 8,
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.9,
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "Bugünkü Adımlarınız",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 16),
-                  // Adım Sayısı
-                  Text(
-                    "$_todaySteps / $_stepGoal",
-                    style: TextStyle(
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  // Pil Görselleştirme
-                  Stack(
-                    children: [
-                      Container(
-                        height: 30,
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      Container(
-                        height: 30,
-                        width: MediaQuery.of(context).size.width * 0.8 * progress,
-                        decoration: BoxDecoration(
-                          color: progress >= 1.0 ? Colors.green : Colors.green,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  // Yüzde Bilgisi
-                  Text(
-                    "$percentage% Tamamlandı",
-                    style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                  ),
-                  SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      print("Adım detaylarına gidiliyor...");
-                    },
-                    child: Text("Detayları Görüntüle"),
-                  ),
-                ],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Günlük, Haftalık Bilgiler
+            Card(
+              elevation: 5,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Text('Bugünkü Adımlar', style: TextStyle(fontSize: 20)),
+                    Text('$_todaySteps', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
+                    Divider(),
+                    Text('Haftalık Adımlar', style: TextStyle(fontSize: 20)),
+                    Text('${_weeklySteps.reduce((a, b) => a + b)}',
+                        style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
+                  ],
+                ),
               ),
             ),
-          ),
+            SizedBox(height: 20),
+            // Haftalık Adım Grafiği
+            Expanded(
+              child: Card(
+                elevation: 5,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: BarChart(
+                    BarChartData(
+                      borderData: FlBorderData(show: true),
+                      titlesData: FlTitlesData(
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            getTitlesWidget: (value, meta) {
+                              switch (value.toInt()) {
+                                case 0:
+                                  return Text('Pzt', style: TextStyle(fontSize: 12));
+                                case 1:
+                                  return Text('Sal', style: TextStyle(fontSize: 12));
+                                case 2:
+                                  return Text('Çar', style: TextStyle(fontSize: 12));
+                                case 3:
+                                  return Text('Per', style: TextStyle(fontSize: 12));
+                                case 4:
+                                  return Text('Cum', style: TextStyle(fontSize: 12));
+                                case 5:
+                                  return Text('Cmt', style: TextStyle(fontSize: 12));
+                                case 6:
+                                  return Text('Paz', style: TextStyle(fontSize: 12));
+                                default:
+                                  return Text('');
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+
+                      barGroups: _weeklySteps.asMap().entries.map((entry) {
+                        int index = entry.key;
+                        int steps = entry.value;
+                        return BarChartGroupData(
+                          x: index,
+                          barRods: [
+                            BarChartRodData(
+                              toY: steps.toDouble(),
+                              color: Colors.blueAccent,
+                              width: 15,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ],
+                        );
+                      }).toList(),
+
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
