@@ -165,6 +165,20 @@ class _ProfilePageState extends State<ProfilePage> {
                       if (value == null || value.isEmpty) {
                         return '$label boş olamaz.';
                       }
+                      if ((label == 'Yaş' || label == 'Boy (cm)' || label == 'Kilo (kg)') &&
+                          int.tryParse(value) == null) {
+                        return 'Geçerli bir $label giriniz.';
+                      }
+                      if (label == 'Yaş' && (int.parse(value) <= 10 || int.parse(value) > 100)) {
+                        return 'Yaş 10 ile 100 arasında olmalıdır.';
+                      }
+                      if (label == 'Kilo (kg)' && (int.parse(value) < 10 || int.parse(value) > 635)) {
+                        return 'Kilo 10 ile 635 arasında olmalıdır.';
+                      }
+                      if (label == 'Boy (cm)' && (int.parse(value) < 50 || int.parse(value) > 250)) {
+                        return 'Boy 50 ile 250 arasında olmalıdır.';
+                      }
+
                       return null;
                     },
                   ),

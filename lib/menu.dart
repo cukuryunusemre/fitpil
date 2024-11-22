@@ -1,13 +1,35 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class MenuDrawer extends StatelessWidget {
-  // Örnek profil resmi URL'si
-  final String _profileImage = 'https://example.com/profile_image.jpg'; // Burada profil resmi URL'sini kullanabilirsiniz.
+class MenuDrawer extends StatefulWidget {
+  @override
+  _MenuDrawerState createState() => _MenuDrawerState();
+}
+
+class _MenuDrawerState extends State<MenuDrawer> {
+  String name = 'Bilinmiyor'; // Varsayılan ad
+  String profileImage = 'images/user_icon.png';  // Varsayılan resim yolu
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData(); // Veriyi yükle
+  }
+
+  Future<void> _loadProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      name = prefs.getString('name') ?? 'Bilinmiyor';
+      profileImage = prefs.getString('profile_image') ?? '';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      width: MediaQuery.of(context).size.width * 0.5,  // Yarım sayfa genişliği
+      width: MediaQuery.of(context).size.width * 0.5, // Yarım sayfa genişliği
       child: Container(
         color: Colors.greenAccent,
         child: ListView(
@@ -17,20 +39,15 @@ class MenuDrawer extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.green,
               ),
-              child: Row(
+              child: Column(
                 children: [
                   CircleAvatar(
-                    radius: 30,  // Profil resmi çapı
-                    backgroundImage: NetworkImage(_profileImage),  // Profil resmi URL'si
+                    radius: 50, // Profil resmi çapı
+                    backgroundImage: profileImage.isNotEmpty
+                        ? FileImage(File(profileImage)) // Profil resmi dosyadan çekilir
+                        : AssetImage('assets/default_user.png') as ImageProvider, // Varsayılan resim
                   ),
                   SizedBox(width: 10),
-                  Text(
-                    'Kullanıcı Adı',  // Buraya kullanıcının adı eklenebilir
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                    ),
-                  ),
                 ],
               ),
             ),
