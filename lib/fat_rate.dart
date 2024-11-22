@@ -24,216 +24,198 @@ void showFatRatePage(BuildContext context) {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Container(
-                  padding: EdgeInsets.all(16),
-                  width: MediaQuery.of(context).size.width * 0.85,
-                  height: MediaQuery.of(context).size.height * 0.6,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Yağ Oranı Hesaplayıcı",
-                              style: TextStyle(
-                                  fontSize: 24.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.lightGreen),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text(
-                                        "Açıklama",
-                                        style:
-                                            TextStyle(color: Colors.lightGreen),
-                                      ),
-                                      content: Text(
-                                        "Ölçüm yaparken dikkat etmeniz gerekenler\n"
-                                        "\tBoyun: adem elması etrafından\n"
-                                        "\tBel: göbek deliği etrafından\n"
-                                        "\tKalça (Yalnızca kadınlar için): en geniş yerinden\n"
-                                        "Hesaplamada Navy BF Calculator algoritması kullanılmaktadır.",
-                                        style: TextStyle(
-                                            fontSize: 15.0, height: 1.5),
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: Navigator.of(context).pop,
-                                          child: Text(
-                                            "Anladım",
-                                            style: TextStyle(
-                                                color: Colors.lightGreen,
-                                                fontSize: 18.0),
-                                          ),
-                                        )
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                              icon: Icon(
-                                Icons.info,
-                                color: Colors.lightGreen,
+              child: FractionallySizedBox(
+                heightFactor:
+                    MediaQuery.of(context).size.height > 800 ? 0.62 : 0.7,
+                child: Container(
+                    padding: EdgeInsets.all(16),
+                    width: MediaQuery.of(context).size.width * 0.85,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  "Yağ Oranı Hesaplayıcı",
+                                  style: TextStyle(
+                                      fontSize: 24.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.lightGreen),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 6.0,
-                        ),
-                        Text(
-                          "Cinsiyet",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18.0),
-                        ),
-                        Row(
-                          children: [
-                            SegmentedButton<String>(
-                              segments: <ButtonSegment<String>>[
-                                ButtonSegment<String>(
-                                  value: "Erkek",
-                                  label: Container(
-                                    width: 75.0,
-                                    child: Icon(
-                                      Icons.man,
-                                      size: 40,
-                                      color: Colors.blue,
-                                    ),
+                              IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text(
+                                          "Açıklama",
+                                          style: TextStyle(
+                                              color: Colors.lightGreen),
+                                        ),
+                                        content: Text(
+                                          "Ölçüm yaparken dikkat etmeniz gerekenler\n"
+                                          "\tBoyun: adem elması etrafından\n"
+                                          "\tBel: göbek deliği etrafından\n"
+                                          "\tKalça (Yalnızca kadınlar için): en geniş yerinden\n"
+                                          "Hesaplamada Navy BF Calculator algoritması kullanılmaktadır.",
+                                          style: TextStyle(
+                                              fontSize: 15.0, height: 1.5),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed:
+                                                Navigator.of(context).pop,
+                                            child: Text(
+                                              "Anladım",
+                                              style: TextStyle(
+                                                  color: Colors.lightGreen,
+                                                  fontSize: 18.0),
+                                            ),
+                                          )
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                icon: Expanded(
+                                  child: Icon(
+                                    Icons.info,
+                                    color: Colors.lightGreen,
                                   ),
                                 ),
-                                ButtonSegment<String>(
-                                  value: "Kadın",
-                                  label: Container(
-                                    width: 75.0,
-                                    child: Icon(
-                                      Icons.woman,
-                                      size: 40,
-                                      color: Colors.pinkAccent,
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 6.0,
+                          ),
+                          Row(
+                            children: [
+                              SegmentedButton<String>(
+                                segments: <ButtonSegment<String>>[
+                                  ButtonSegment<String>(
+                                    value: "Erkek",
+                                    label: Container(
+                                      width: 75.0,
+                                      child: Icon(
+                                        Icons.man,
+                                        size: 40,
+                                        color: Colors.blue,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                              selected: <String>{_selectedOption},
-                              style: ButtonStyle(
-                                side: MaterialStateProperty.resolveWith<
-                                    BorderSide?>((states) {
-                                  if (states.contains(MaterialState.selected)) {
+                                  ButtonSegment<String>(
+                                    value: "Kadın",
+                                    label: Container(
+                                      width: 75.0,
+                                      child: Icon(
+                                        Icons.woman,
+                                        size: 40,
+                                        color: Colors.pinkAccent,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                                selected: <String>{_selectedOption},
+                                style: ButtonStyle(
+                                  side: MaterialStateProperty.resolveWith<
+                                      BorderSide?>((states) {
+                                    if (states
+                                        .contains(MaterialState.selected)) {
+                                      return BorderSide.none;
+                                    }
                                     return BorderSide.none;
-                                  }
-                                  return BorderSide.none;
-                                }),
-                                backgroundColor:
-                                    MaterialStateProperty.resolveWith<Color?>(
-                                        (states) {
-                                  if (states.contains(MaterialState.selected)) {
+                                  }),
+                                  backgroundColor:
+                                      MaterialStateProperty.resolveWith<Color?>(
+                                          (states) {
+                                    if (states
+                                        .contains(MaterialState.selected)) {
+                                      return Colors
+                                          .lightGreen; // Seçili buton rengi
+                                    }
                                     return Colors
-                                        .lightGreen; // Seçili buton rengi
-                                  }
-                                  return Colors
-                                      .grey[300]; // Varsayılan buton rengi
-                                }),
-                              ),
-                              onSelectionChanged: (Set<String> newSelection) {
-                                setState(() {
-                                  _selectedOption = newSelection.first;
-                                });
-                              },
-                              showSelectedIcon: false,
-                            )
-                            // Radio<String>(
-                            //   value: "Erkek",
-                            //   groupValue: _selectedOption,
-                            //   onChanged: (value) {
-                            //     setState(
-                            //       () {
-                            //         _selectedOption = value;
-                            //       },
-                            //     );
-                            //   },
-                            // ),
-                            // Text("Erkek"),
-                            // Radio<String>(
-                            //   value: "Kadın",
-                            //   groupValue: _selectedOption,
-                            //   onChanged: (value) {
-                            //     setState(
-                            //       () {
-                            //         _selectedOption = value;
-                            //       },
-                            //     );
-                            //   },
-                            // ),
-                            // Text("Kadın"),
-                          ],
-                        ),
-                        TextField(
-                          controller: _heightController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(labelText: "Boy (cm)"),
-                          onChanged: (value) {
-                            setState(() {
-                              _calculateFatRate(setState);
-                            });
-                          },
-                        ),
-                        SizedBox(height: 6.0),
-                        TextField(
-                          controller: _neckController,
-                          keyboardType: TextInputType.number,
-                          decoration:
-                              InputDecoration(labelText: "Boyun Çevresi"),
-                          onChanged: (value) {
-                            setState(() {
-                              _calculateFatRate(setState);
-                            });
-                          },
-                        ),
-                        SizedBox(height: 6.0),
-                        TextField(
-                          controller: _waistController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(labelText: "Bel Çevresi"),
-                          onChanged: (value) {
-                            setState(() {
-                              _calculateFatRate(setState);
-                            });
-                          },
-                        ),
-                        SizedBox(height: 6.0),
-                        if (_selectedOption == "Kadın")
+                                        .grey[300]; // Varsayılan buton rengi
+                                  }),
+                                ),
+                                onSelectionChanged: (Set<String> newSelection) {
+                                  setState(() {
+                                    _selectedOption = newSelection.first;
+                                  });
+                                },
+                                showSelectedIcon: false,
+                              )
+                            ],
+                          ),
                           TextField(
-                            controller: _hipController,
+                            controller: _heightController,
                             keyboardType: TextInputType.number,
-                            decoration:
-                                InputDecoration(labelText: "Kalça Çevresi"),
+                            decoration: InputDecoration(labelText: "Boy (cm)"),
                             onChanged: (value) {
                               setState(() {
                                 _calculateFatRate(setState);
                               });
                             },
                           ),
-                        SizedBox(height: 16.0),
-                        TextField(
-                          controller: _resultController,
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            labelText: "Yağ Oranı",
-                            border: OutlineInputBorder(),
+                          SizedBox(height: 6.0),
+                          TextField(
+                            controller: _neckController,
+                            keyboardType: TextInputType.number,
+                            decoration:
+                                InputDecoration(labelText: "Boyun Çevresi"),
+                            onChanged: (value) {
+                              setState(() {
+                                _calculateFatRate(setState);
+                              });
+                            },
                           ),
-                        ),
-                        SizedBox(
-                          height: 6.0,
-                        ),
-                      ],
-                    ),
-                  )),
+                          SizedBox(height: 6.0),
+                          TextField(
+                            controller: _waistController,
+                            keyboardType: TextInputType.number,
+                            decoration:
+                                InputDecoration(labelText: "Bel Çevresi"),
+                            onChanged: (value) {
+                              setState(() {
+                                _calculateFatRate(setState);
+                              });
+                            },
+                          ),
+                          SizedBox(height: 6.0),
+                          if (_selectedOption == "Kadın")
+                            TextField(
+                              controller: _hipController,
+                              keyboardType: TextInputType.number,
+                              decoration:
+                                  InputDecoration(labelText: "Kalça Çevresi"),
+                              onChanged: (value) {
+                                setState(() {
+                                  _calculateFatRate(setState);
+                                });
+                              },
+                            ),
+                          SizedBox(height: 16.0),
+                          TextField(
+                            controller: _resultController,
+                            readOnly: true,
+                            decoration: InputDecoration(
+                              labelText: "Yağ Oranı",
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 6.0,
+                          ),
+                        ],
+                      ),
+                    )),
+              ),
             );
           },
         );

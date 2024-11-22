@@ -20,6 +20,13 @@ dependencies:
   cupertino_icons: ^1.0.8
   image_picker: ^1.1.2
   font_awesome_flutter: ^10.8.0
+  flutter_native_splash: ^2.4.3
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: "assets/images/maskot1.png"
+  android: true
+  ios: true
 
 dev_dependencies:
   flutter_test:

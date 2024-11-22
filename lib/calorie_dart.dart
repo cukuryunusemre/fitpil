@@ -35,9 +35,9 @@ void showCaloriePage(BuildContext context) {
             borderRadius: BorderRadius.circular(16),
           ),
           child: Container(
-              padding: EdgeInsets.all(16),
-              width: MediaQuery.of(context).size.width * 0.8,
               height: MediaQuery.of(context).size.height * 0.6,
+              width: MediaQuery.of(context).size.width * 0.8,
+              padding: EdgeInsets.all(16),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

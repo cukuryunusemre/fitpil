@@ -36,9 +36,12 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
     return Padding(
       padding: EdgeInsets.all(8.0),
-      child: SingleChildScrollView( // Taşmayı önlemek için kaydırılabilir yapı
+      child: SingleChildScrollView(
+        // Taşmayı önlemek için kaydırılabilir yapı
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -46,8 +49,8 @@ class _HomePageState extends State<HomePage> {
 
             // Adım Sayar Butonu
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: 170.0,
+              width: screenWidth * 0.9,
+              height: screenHeight * 0.24,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.zero,
@@ -56,14 +59,14 @@ class _HomePageState extends State<HomePage> {
                 ),
                 onPressed: () {
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => StepTrackerPage()),
+                    context,
+                    MaterialPageRoute(builder: (context) => StepTrackerPage()),
                   );
                 },
                 child: Ink(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.blue, Colors.lightBlue],
+                      colors: [Colors.blue, Colors.lightBlueAccent],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -93,17 +96,15 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: 16.0),
             // Antrenman Rutini Butonu
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: 170.0,
+              width: screenWidth * 0.9,
+              height: screenHeight * 0.22,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.zero,
                   backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,
                 ),
-                onPressed: () {
-
-                },
+                onPressed: () {},
                 child: Ink(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -126,7 +127,8 @@ class _HomePageState extends State<HomePage> {
                         SizedBox(height: 16.0),
                         Text(
                           "Antrenman Rutini",
-                          style: TextStyle(color: Colors.white54, fontSize: 20.0),
+                          style:
+                              TextStyle(color: Colors.white54, fontSize: 20.0),
                         ),
                       ],
                     ),
@@ -139,10 +141,11 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.4,
-                  height: 170.0,
+                  width: screenWidth * 0.4,
+                  height: screenHeight * 0.22,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
                       backgroundColor: Colors.lightGreen,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -151,29 +154,44 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () {
                       showCaloriePage(context);
                     },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.restaurant,
-                          color: Colors.white,
-                          size: 40.0,
+                    child: Ink(
+                      decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                              colors: [Colors.green, Colors.greenAccent],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight),
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        alignment: Alignment.center,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.restaurant,
+                              color: Colors.white,
+                              size: 40.0,
+                            ),
+                            SizedBox(height: 10.0),
+                            Text(
+                              "Kalori",
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 18.0),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 10.0),
-                        Text(
-                          "Kalori",
-                          style: TextStyle(color: Colors.white, fontSize: 16.0),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
                 SizedBox(width: 16.0),
                 SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.4,
-                  height: 170.0,
+                  width: screenWidth * 0.4,
+                  height: screenHeight * 0.22,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
                       backgroundColor: Colors.lightGreen,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -182,20 +200,34 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () {
                       showFatRatePage(context);
                     },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.water_drop,
-                          color: Colors.white,
-                          size: 40.0,
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            colors: [Colors.green, Colors.greenAccent],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.water_drop,
+                              color: Colors.white,
+                              size: 40.0,
+                            ),
+                            SizedBox(height: 10.0),
+                            Text(
+                              "Yağ Oranı",
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 18.0),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 10.0),
-                        Text(
-                          "Yağ Oranı",
-                          style: TextStyle(color: Colors.white, fontSize: 16.0),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),

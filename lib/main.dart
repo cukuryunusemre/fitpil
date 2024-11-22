@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'home.dart';
 import 'profil.dart';
 import 'progress_page.dart';
+import 'dart:async';
 
 void main() {
   runApp(MyApp());
@@ -12,11 +13,57 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Fitpil',
+      title: 'Fit Pill',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MainMenu(),
+      initialRoute: '/', // Splash Screen başlangıç rotası
+      routes: {
+        '/': (context) => SplashScreen(),
+        '/main_menu': (context) => MainMenu(),
+        '/home': (context) => HomePage(),
+        '/profile': (context) => ProfilePage(),
+        '/progress': (context) => ProgressPage(),
+      },
+    );
+  }
+}
+
+class SplashScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Splash ekranından ana menüye yönlendirme
+    Timer(Duration(seconds: 3), () {
+      Navigator.pushReplacementNamed(context, '/main_menu');
+    });
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'images/maskot1.png', // Logonuzun yolu
+              width: 150, // Splash ekranı logo genişliği
+              height: 150, // Splash ekranı logo yüksekliği
+            ),
+            SizedBox(height: 20),
+            Text(
+              "Fit Pill",
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Pacifico',
+                color: Colors.green,
+              ),
+            ),
+            SizedBox(height: 20),
+            CircularProgressIndicator(
+                color: Colors.green), // Yükleme animasyonu
+          ],
+        ),
+      ),
     );
   }
 }
@@ -57,14 +104,19 @@ class _MainMenuState extends State<MainMenu> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Fit Pill',
-          style: TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Pacifico',
-            color: Colors.white70,
-          ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Fit Pill',
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Pacifico',
+                color: Colors.white70,
+              ),
+            ),
+          ],
         ),
         centerTitle: true,
         flexibleSpace: Container(
@@ -106,5 +158,3 @@ class _MainMenuState extends State<MainMenu> {
     );
   }
 }
-
-
