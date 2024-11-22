@@ -1,5 +1,6 @@
 import 'package:fitpil/calorie_dart.dart';
 import 'package:fitpil/fat_rate.dart';
+import 'package:fitpil/workout_routine.dart';
 import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart'; // Adım sayar paketi
 import '../step_page.dart';
@@ -111,7 +112,14 @@ class _HomePageState extends State<HomePage> {
                   backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WorkoutPage(),
+                    ),
+                  );
+                },
                 child: Ink(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
