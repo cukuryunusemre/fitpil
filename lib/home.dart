@@ -38,6 +38,13 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+    double responseHeight = screenHeight;
+    double responseWidth = screenWidth * 0.45;
+    if (screenHeight > 800) {
+      responseHeight = screenHeight * 0.25;
+    } else {
+      responseHeight = responseHeight * 0.21;
+    }
     return Padding(
       padding: EdgeInsets.all(8.0),
       child: SingleChildScrollView(
@@ -49,7 +56,7 @@ class _HomePageState extends State<HomePage> {
 
             // Adım Sayar Butonu
             SizedBox(
-              width: screenWidth * 0.9,
+              width: screenWidth * 0.95,
               height: screenHeight * 0.24,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -96,7 +103,7 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: 16.0),
             // Antrenman Rutini Butonu
             SizedBox(
-              width: screenWidth * 0.9,
+              width: screenWidth * 0.95,
               height: screenHeight * 0.22,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -141,8 +148,8 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 SizedBox(
-                  width: screenWidth * 0.4,
-                  height: screenHeight * 0.22,
+                  width: responseWidth,
+                  height: responseHeight,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.zero,
@@ -187,8 +194,8 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(width: 16.0),
                 SizedBox(
-                  width: screenWidth * 0.4,
-                  height: screenHeight * 0.22,
+                  width: responseWidth,
+                  height: responseHeight,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.zero,
