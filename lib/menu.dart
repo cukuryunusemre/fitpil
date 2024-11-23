@@ -31,13 +31,18 @@ class _MenuDrawerState extends State<MenuDrawer> {
     return Drawer(
       width: MediaQuery.of(context).size.width * 0.5, // Yarım sayfa genişliği
       child: Container(
-        color: Colors.greenAccent,
+        color: Colors.white24,
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.green,
+                gradient: LinearGradient(
+                    colors: [
+                      Colors.green,
+                      Colors.greenAccent
+                    ],
+                )
               ),
               child: Column(
                 children: [
