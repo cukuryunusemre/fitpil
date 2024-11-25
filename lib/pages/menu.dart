@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:fitpil/pages/blog_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -58,8 +59,15 @@ class _MenuDrawerState extends State<MenuDrawer> {
               ),
             ),
             ListTile(
-              title: Text('Seçenek 1'),
-              onTap: () {},
+              title: Text('Blog'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BloggerPostsPage(),
+                  ),
+                );
+              },
             ),
             ListTile(
               title: Text('Seçenek 2'),

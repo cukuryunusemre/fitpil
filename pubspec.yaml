@@ -27,6 +27,9 @@ dependencies:
   fl_chart: ^0.69.2
   permission_handler: ^11.3.1
   http: ^1.2.2
+  flutter_html: 3.0.0-beta.2
+  flutter_dotenv: ^5.2.1
+
 
 flutter_native_splash:
   color: "#ffffff"
@@ -48,6 +51,7 @@ flutter:
 
   assets:
     - images/
+    - .env
 
   uses-material-design: true
 

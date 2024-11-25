@@ -6,15 +6,17 @@ import 'dart:async';
 import 'pages/menu.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([
+  await dotenv.load();
+  await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
-  ]).then((_) {
-    runApp(MyApp());
-  });
+  ]);
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
