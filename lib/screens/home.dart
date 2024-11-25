@@ -1,9 +1,10 @@
-import 'package:fitpil/calorie_dart.dart';
-import 'package:fitpil/fat_rate.dart';
-import 'package:fitpil/workout_routine.dart';
+import 'package:fitpil/pages/calorie_dart.dart';
+import 'package:fitpil/pages/fat_rate.dart';
+import 'package:fitpil/pages/workout_routine.dart';
 import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart'; // Adım sayar paketi
-import '../step_page.dart';
+import '../pages/step_page.dart';
+import 'package:fitpil/permission.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -66,6 +67,7 @@ class _HomePageState extends State<HomePage> {
                   shadowColor: Colors.transparent,
                 ),
                 onPressed: () {
+                  requestBodySensorsPermission();
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => StepTrackerPage()),

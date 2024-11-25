@@ -58,6 +58,22 @@ class _StepTrackerPageState extends State<StepTrackerPage> {
     setState(() {
       _weeklySteps = savedWeeklySteps;
     });
+
+    if (DateTime.parse(lastDate).isBefore(currentDate)) {
+      int daysDifference = currentDate.difference(DateTime.parse(lastDate)).inDays;
+
+      for (int i = 1; i <= daysDifference; i++) {
+        int index = (currentDate.weekday - i) % 7; // Haftanın günü
+        _weeklySteps[index] = 0; // Geçmiş günlerin adım sayısını sıfırla
+      }
+
+      setState(() {
+        int dayIndex = currentDate.weekday - 1;
+        _weeklySteps[dayIndex] = _todaySteps;
+        _todaySteps = 0;
+      });
+    }
+
   }
 
   Future<void> _saveSteps() async {

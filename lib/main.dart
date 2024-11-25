@@ -3,10 +3,18 @@ import 'screens/home.dart';
 import 'screens/profil.dart';
 import 'screens/progress_page.dart';
 import 'dart:async';
-import 'menu.dart';
+import 'pages/menu.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/services.dart';
 
 void main() {
-  runApp(MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((_) {
+    runApp(MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -29,12 +37,30 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+Future<void> checkPermissions() async {
+  // Kamera izni kontrolü
+  var cameraStatus = await Permission.camera.status;
+  if (cameraStatus.isDenied) {
+    await Permission.camera.request();
+  }
+
+  // Konum izni kontrolü
+  var locationStatus = await Permission.location.status;
+  if (locationStatus.isDenied) {
+    await Permission.location.request();
+  }
+
+  // Kalıcı olarak reddedilmişse, ayarlara yönlendirme
+  if (cameraStatus.isPermanentlyDenied || locationStatus.isPermanentlyDenied) {
+    await openAppSettings();
+  }
+}
 
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Splash ekranından ana menüye yönlendirme
-    Timer(Duration(seconds: 3), () {
+    Timer(Duration(seconds: 3), () async {
       Navigator.pushReplacementNamed(context, '/main_menu');
     });
 
@@ -170,4 +196,5 @@ class _MainMenuState extends State<MainMenu> {
       ),
     );
   }
+
 }

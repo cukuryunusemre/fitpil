@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fitpil/permission.dart';
 
 void main() {
   runApp(MyApp());
@@ -95,6 +96,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 leading: Icon(Icons.camera_alt, color: Colors.blue),
                 title: Text('Kameradan Çek'),
                 onTap: () async {
+                  requestCameraPermission(); // kamera izini
                   Navigator.pop(context);
                   final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
                   if (pickedFile != null) {
@@ -110,6 +112,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 leading: Icon(Icons.photo_library, color: Colors.green),
                 title: Text('Galeriden Seç'),
                 onTap: () async {
+                  requestStoragePermission();
                   Navigator.pop(context);
                   final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
                   if (pickedFile != null) {
