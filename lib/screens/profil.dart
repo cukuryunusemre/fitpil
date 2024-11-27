@@ -96,14 +96,20 @@ class _ProfilePageState extends State<ProfilePage> {
                 leading: Icon(Icons.camera_alt, color: Colors.blue),
                 title: Text('Kameradan Çek'),
                 onTap: () async {
-                  requestCameraPermission(); // kamera izini
-                  Navigator.pop(context);
-                  final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
-                  if (pickedFile != null) {
-                    setState(() {
-                      _profileImage = File(pickedFile.path);
-                    });
-                    await _saveProfileData();
+                  bool isGranted = await requestCameraPermission(); // Kamera iznini kontrol et
+                  if (isGranted) {
+                    Navigator.pop(context);
+                    final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
+                    if (pickedFile != null) {
+                      setState(() {
+                        _profileImage = File(pickedFile.path);
+                      });
+                      await _saveProfileData();
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Kamera izni gerekli!")),
+                    );
                   }
                 },
               ),
@@ -112,14 +118,20 @@ class _ProfilePageState extends State<ProfilePage> {
                 leading: Icon(Icons.photo_library, color: Colors.green),
                 title: Text('Galeriden Seç'),
                 onTap: () async {
-                  requestStoragePermission();
-                  Navigator.pop(context);
-                  final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-                  if (pickedFile != null) {
-                    setState(() {
-                      _profileImage = File(pickedFile.path);
-                    });
-                    await _saveProfileData();
+                  bool isGranted = await requestStoragePermission(); // Depolama iznini kontrol et
+                  if (isGranted) {
+                    Navigator.pop(context); // Dialog'u kapat
+                    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+                    if (pickedFile != null) {
+                      setState(() {
+                        _profileImage = File(pickedFile.path);
+                      });
+                      await _saveProfileData(); // Veriyi kaydet
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Depolama izni gerekli!")),
+                    );
                   }
                 },
               ),
@@ -249,24 +261,20 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
             SizedBox(height: 20),
-            Expanded(
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, // 3 sütun
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 1, // Kutu oranı
-                ),
-                shrinkWrap: true,
-                itemCount: 6, // Kaç öğe olduğunu belirleyin
-                itemBuilder: (context, index) {
-                  if (index == 0) return _buildInfoTile('Yaş', ageController.text, 'Yaş', ageController);
-                  if (index == 1) return _buildInfoTile('Boy (cm)', heightController.text, 'Boy (cm)', heightController);
-                  if (index == 2) return _buildInfoTile('Kilo (kg)', weightController.text, 'Kilo (kg)', weightController);
-                  if (index == 3) return _buildReadOnlyTile('Yağ Oranı', fatPercentage);
-                  if (index == 4) return _buildReadOnlyTile('BMI', BMI);
-                  return _buildReadOnlyTile('Günlük Kalori', Kcal);
-                },
+            Expanded( // Burası GridView'e doğru alan sağlayacak
+              child: GridView.count(
+                crossAxisCount: 3,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                childAspectRatio: 0.9, // Kutu boyutunu daha dengeli yapar
+                children: [
+                  _buildInfoTile('Yaş', ageController.text, 'Yaş', ageController),
+                  _buildInfoTile('Boy (cm)', heightController.text, 'Boy (cm)', heightController),
+                  _buildInfoTile('Kilo (kg)', weightController.text, 'Kilo (kg)', weightController),
+                  _buildReadOnlyTile('Yağ Oranı', fatPercentage),
+                  _buildReadOnlyTile('BMI', BMI),
+                  _buildReadOnlyTile('Günlük Kalori', Kcal),
+                ],
               ),
             ),
           ],

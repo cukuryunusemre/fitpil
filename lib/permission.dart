@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 
-Future<void> requestBodySensorsPermission() async {
+Future<bool> requestBodySensorsPermission() async {
   var status = await Permission.sensors.status;
 
   if (status.isDenied) {
@@ -10,54 +10,54 @@ Future<void> requestBodySensorsPermission() async {
     var result = await Permission.sensors.request();
     if (result.isGranted) {
       print("Body Sensors izni verildi.");
+      return true; // İzin verildi
     } else {
       print("Body Sensors izni reddedildi.");
+      return false; // İzin reddedildi
     }
   } else if (status.isPermanentlyDenied) {
     print("Body Sensors izni kalıcı olarak reddedildi. Ayarlara yönlendirin.");
     await openAppSettings();
+    return false; // Kalıcı olarak reddedildi
   } else if (status.isGranted) {
     print("Body Sensors izni zaten verilmiş.");
+    return true; // İzin zaten verilmiş
   }
+
+  return false; // Diğer durumlar
 }
 
-Future<void> requestCameraPermission() async {
+Future<bool> requestCameraPermission() async {
   var status = await Permission.camera.status;
 
   if (status.isDenied) {
-    // İzin talebi
     var result = await Permission.camera.request();
-    if (result.isGranted) {
-      print("Kamera izni verildi.");
-    } else {
-      print("Kamera izni reddedildi.");
-    }
+    return result.isGranted; // İzin verildiyse true döndür
   } else if (status.isPermanentlyDenied) {
     print("Kamera izni kalıcı olarak reddedildi. Ayarlara yönlendirin.");
     await openAppSettings();
-  } else if (status.isGranted) {
-    print("Kamera izni zaten verilmiş.");
+    return false; // Kalıcı olarak reddedildiyse false döndür
   }
 
+  return status.isGranted; // İzin zaten verilmişse true döndür
 }
 
-Future<void> requestStoragePermission() async{
+Future<bool> requestStoragePermission() async {
   var status = await Permission.storage.status;
 
   if (status.isDenied) {
-    // İzin talebi
     var result = await Permission.storage.request();
-    if (result.isGranted) {
-      print("Dosya izni verildi.");
-    } else {
-      print("Dosya izni reddedildi.");
-    }
+    return result.isGranted; // İzin verildiyse true döndür
   } else if (status.isPermanentlyDenied) {
-    print("Dosya izni kalıcı olarak reddedildi. Ayarlara yönlendirin.");
+    print("Depolama izni kalıcı olarak reddedildi. Ayarlara yönlendirin.");
     await openAppSettings();
-  } else if (status.isGranted) {
-    print("Dosya izni zaten verilmiş.");
+    return false; // Kalıcı olarak reddedildiyse false döndür
   }
+
+  return status.isGranted; // İzin zaten verilmişse true döndür
 }
+
+
+
 
 

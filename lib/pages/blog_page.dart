@@ -12,15 +12,27 @@ class BloggerPostsPage extends StatefulWidget {
 
 class _BloggerPostsPageState extends State<BloggerPostsPage> {
   List posts = [];
+  List filteredPosts = [];
+  TextEditingController searchController = TextEditingController();
+  bool isSearchActive = false; // Arama çubuğu durumu
+  String selectedCategory = "Hepsi"; // Varsayılan kategori
 
   @override
   void initState() {
     super.initState();
     fetchPosts();
+    searchController.addListener(() {
+      filterPosts();
+    });
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 
   Future<void> fetchPosts() async {
-    // API Anahtarı ve Blog ID'si .env dosyasından alınıyor
     final String? apiKey = dotenv.env['API_KEY'];
     final String? blogId = dotenv.env['BLOG_ID'];
 
@@ -39,6 +51,7 @@ class _BloggerPostsPageState extends State<BloggerPostsPage> {
         final data = jsonDecode(response.body);
         setState(() {
           posts = data['items'] ?? [];
+          filteredPosts = posts; // Tüm gönderiler başlangıçta gösterilir
         });
       } else {
         print('Sayfalar yüklenemedi: ${response.statusCode}');
@@ -48,35 +61,138 @@ class _BloggerPostsPageState extends State<BloggerPostsPage> {
     }
   }
 
+  void filterPosts() {
+    setState(() {
+      filteredPosts = posts.where((post) {
+        final title = post['title']?.toLowerCase() ?? '';
+        final query = searchController.text.toLowerCase();
+        final labels = List<String>.from(post['labels'] ?? []);
+        return (title.contains(query)) &&
+            (selectedCategory == "Hepsi" || labels.contains(selectedCategory));
+      }).toList();
+    });
+  }
+
+  Set<String> extractTags() {
+    final tags = <String>{"Hepsi"}; // "Hepsi" etiketi ekleniyor
+    for (var post in posts) {
+      if (post['labels'] != null) {
+        tags.addAll(List<String>.from(post['labels']));
+      }
+    }
+    return tags;
+  }
+
+  void filterByCategory(String category) {
+    setState(() {
+      selectedCategory = category;
+      filterPosts(); // Kategori seçimiyle filtreleme yap
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final tags = extractTags();
     return Scaffold(
       appBar: AppBar(
-        title: Text("Blog"),
-        centerTitle: true,
-    flexibleSpace: Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue, Colors.greenAccent],
+        title: Row(
+          children: [
+            Expanded(
+              child: AnimatedContainer(
+                duration: Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                width: isSearchActive ? double.infinity : 0,
+                child: isSearchActive
+                    ? TextField(
+                  controller: searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Ara...',
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                  ),
+                  autofocus: true,
+                )
+                    : null,
+              ),
+            ),
+            IconButton(
+              icon: Icon(isSearchActive ? Icons.close : Icons.search),
+              onPressed: () {
+                setState(() {
+                  if (isSearchActive) {
+                    searchController.clear();
+                    filteredPosts = posts;
+                  }
+                  isSearchActive = !isSearchActive;
+                });
+              },
+            ),
+            PopupMenuButton<String>(
+              icon: Icon(Icons.menu), // Hamburger menü ikonu
+              onSelected: (String value) {
+                filterByCategory(value);
+              },
+              itemBuilder: (BuildContext context) {
+                return tags.map((String tag) {
+                  return PopupMenuItem<String>(
+                    value: tag,
+                    child: Row(
+                      children: [
+                        Icon(
+                          tag == "Hepsi" ? Icons.all_inclusive : Icons.label,
+                          color: tag == selectedCategory ? Colors.blue : Colors.grey,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          tag,
+                          style: TextStyle(
+                            fontWeight: tag == selectedCategory ? FontWeight.bold : FontWeight.normal,
+                            color: tag == selectedCategory ? Colors.blue : Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList();
+              },
+            ),
+          ],
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blue, Colors.greenAccent],
+            ),
+          ),
         ),
       ),
-    ),
-      ),
-      body: posts.isEmpty
-          ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: posts.length,
+      body: Column(
+        children: [
+          Expanded(
+            child: filteredPosts.isEmpty
+                ? (searchController.text.isNotEmpty || selectedCategory != "Hepsi"
+                ? Center(
+              child: Text(
+                "Sonuç bulunamadı.",
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
+            )
+                : Center(child: CircularProgressIndicator()))
+                : ListView.builder(
+              itemCount: filteredPosts.length,
               itemBuilder: (context, index) {
-                final post = posts[index];
+                final post = filteredPosts[index];
                 return Card(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  elevation: 5  ,
+                  elevation: 5,
                   child: ListTile(
                     title: Text(post['title'] ?? 'Başlık Yok'),
                     subtitle: Text(
-                      DateFormat('dd MMM yyyy').format(DateTime.parse(post['published'])),
+                      DateFormat('dd MMM yyyy').format(
+                        DateTime.parse(post['published']),
+                      ),
                     ),
                     trailing: Icon(Icons.arrow_forward),
                     onTap: () {
@@ -94,6 +210,9 @@ class _BloggerPostsPageState extends State<BloggerPostsPage> {
                 );
               },
             ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -113,35 +232,18 @@ class PostDetailPage extends StatelessWidget {
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Html(
-            data: content,
+          data: content,
           style: {
             "img": Style(
-              display: Display.block, // Resimleri blok halinde göster
+              display: Display.block,
               width: Width(100, Unit.percent),
             ),
-            // Varsayılan olarak tüm stil özelliklerini sıfırlama
             "*": Style(
-              margin: Margins.zero, // Tüm margin değerlerini sıfırla
-              padding: HtmlPaddings.zero, // Tüm padding değerlerini sıfırla
-              fontSize: FontSize(16), // Varsayılan font boyutu
-              lineHeight: LineHeight(1.5), // Varsayılan satır yüksekliği
+              margin: Margins.zero,
+              padding: HtmlPaddings.zero,
+              fontSize: FontSize(16),
+              lineHeight: LineHeight(1.5),
             ),
-            // Özel etiketler için margin/padding
-            "h2": Style(
-              margin: Margins.only(bottom: 12), // Başlıkların altına biraz boşluk bırak
-              fontSize: FontSize.large, // Büyük font boyutu
-              color: Colors.red, // Kırmızı renk
-            ),
-            "p": Style(
-              margin: Margins.only(bottom: 8), // Paragraflar arasına az boşluk bırak
-              fontSize: FontSize(14), // Daha küçük font boyutu
-              color: Colors.black,
-            ),
-            "div": Style(
-              alignment: Alignment.center, // Resmi kapsayan divleri ortala
-            ),
-
-
           },
         ),
       ),

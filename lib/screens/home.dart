@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart'; // Adım sayar paketi
 import '../pages/step_page.dart';
 import 'package:fitpil/permission.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -66,12 +67,18 @@ class _HomePageState extends State<HomePage> {
                   backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,
                 ),
-                onPressed: () {
-                  requestBodySensorsPermission();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => StepTrackerPage()),
-                  );
+                onPressed: () async {
+                  bool isGranted = await requestBodySensorsPermission();
+                  if (isGranted) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => StepTrackerPage()),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Lütfen sensör izni verin!")),
+                    );
+                  }
                 },
                 child: Ink(
                   decoration: BoxDecoration(
