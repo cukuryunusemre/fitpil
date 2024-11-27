@@ -55,28 +55,28 @@ class _BloggerPostsPageState extends State<BloggerPostsPage> {
       body: posts.isEmpty
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(
-        itemCount: posts.length,
-        itemBuilder: (context, index) {
-          final post = posts[index];
-          return Card(
-            child: ListTile(
-              title: Text(post['title'] ?? 'No Title'),
-              subtitle: Text(post['published'] ?? 'No Date'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PostDetailPage(
-                      title: post['title'] ?? 'No Title',
-                      content: post['content'] ?? 'No Content',
-                    ),
+              itemCount: posts.length,
+              itemBuilder: (context, index) {
+                final post = posts[index];
+                return Card(
+                  child: ListTile(
+                    title: Text(post['title'] ?? 'No Title'),
+                    subtitle: Text(post['published'] ?? 'No Date'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PostDetailPage(
+                            title: post['title'] ?? 'No Title',
+                            content: post['content'] ?? 'No Content',
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 );
               },
             ),
-          );
-        },
-      ),
     );
   }
 }

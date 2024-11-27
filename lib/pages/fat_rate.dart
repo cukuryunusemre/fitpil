@@ -246,18 +246,22 @@ void _calculateFatRate(StateSetter setState) {
         (waist <= neck)) {
       _resultController.text = "Lütfen Geçerli Değerler Giriniz";
     } else if (_selectedOption == "Erkek") {
-      bodyFat = 86.010 * (log(waist - neck) / log(10)) -
-          70.041 * (log(height) / log(10)) +
-          36.76;
+      bodyFat = 495 /
+              (1.0324 -
+                  0.19077 * log(waist - neck) / ln10 +
+                  0.15456 * log(height) / ln10) -
+          450;
       if (bodyFat < 0) {
         _resultController.text = "Lütfen Geçerli Değerler Giriniz";
       } else {
         _resultController.text = "${bodyFat.toStringAsFixed(1)}%";
       }
     } else if (_selectedOption == "Kadın" && _hipController.text.isNotEmpty) {
-      bodyFat = 163.205 * (log(waist + hip - neck) / log(10)) -
-          97.684 * (log(height) / log(10)) -
-          78.387;
+      bodyFat = 495 /
+              (1.29579 -
+                  0.35004 * log(height + hip - neck) / ln10 +
+                  0.22100 * log(height) / ln10) -
+          450;
       if (bodyFat < 0) {
         _resultController.text = "Lütfen Geçerli Değerler Giriniz";
       } else {

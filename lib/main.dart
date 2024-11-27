@@ -11,6 +11,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
+
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 Future<void> checkPermissions() async {
   // Kamera izni kontrolü
   var cameraStatus = await Permission.camera.status;
@@ -136,27 +138,36 @@ class _MainMenuState extends State<MainMenu> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Fit Pill',
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Pacifico',
-                color: Colors.white70,
-              ),
-            ),
-          ],
-        ),
-        centerTitle: true,
+        automaticallyImplyLeading: false,
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                Colors.green,
-                Colors.greenAccent,
+              colors: [Colors.green, Colors.greenAccent],
+            ),
+          ),
+          child: SafeArea(
+            child: Stack(
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                    onPressed: () {
+                      _scaffoldKey.currentState?.openDrawer();
+                    },
+                    icon: Icon(Icons.menu),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Fit Pill",
+                    style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Pacifico',
+                        color: Colors.white70),
+                  ),
+                )
               ],
             ),
           ),
@@ -165,7 +176,7 @@ class _MainMenuState extends State<MainMenu> {
           IconButton(
             icon: Icon(Icons.menu),
             onPressed: () {
-              _scaffoldKey.currentState?.openEndDrawer();  // Sağdaki menüyü aç
+              _scaffoldKey.currentState?.openEndDrawer(); // Sağdaki menüyü aç
             },
           ),
         ],
@@ -198,5 +209,4 @@ class _MainMenuState extends State<MainMenu> {
       ),
     );
   }
-
 }
