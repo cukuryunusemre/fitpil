@@ -124,4 +124,11 @@ class DatabaseHelper {
       whereArgs: [id],
     );
   }
+
+  Future<int> getPageCount() async {
+    final db = await database; // Veritabanı referansı alınır
+    final result = await db
+        .rawQuery('SELECT COUNT(*) as count FROM pages'); // Sayfaları say
+    return Sqflite.firstIntValue(result) ?? 0; // İlk sonuç değerini döndür
+  }
 }

@@ -104,14 +104,14 @@ class _BloggerPostsPageState extends State<BloggerPostsPage> {
                 width: isSearchActive ? double.infinity : 0,
                 child: isSearchActive
                     ? TextField(
-                  controller: searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Ara...',
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                  ),
-                  autofocus: true,
-                )
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Ara...',
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                        ),
+                        autofocus: true,
+                      )
                     : null,
               ),
             ),
@@ -140,14 +140,20 @@ class _BloggerPostsPageState extends State<BloggerPostsPage> {
                       children: [
                         Icon(
                           tag == "Hepsi" ? Icons.all_inclusive : Icons.label,
-                          color: tag == selectedCategory ? Colors.blue : Colors.grey,
+                          color: tag == selectedCategory
+                              ? Colors.blue
+                              : Colors.grey,
                         ),
                         SizedBox(width: 8),
                         Text(
                           tag,
                           style: TextStyle(
-                            fontWeight: tag == selectedCategory ? FontWeight.bold : FontWeight.normal,
-                            color: tag == selectedCategory ? Colors.blue : Colors.black,
+                            fontWeight: tag == selectedCategory
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: tag == selectedCategory
+                                ? Colors.blue
+                                : Colors.black,
                           ),
                         ),
                       ],
@@ -170,46 +176,47 @@ class _BloggerPostsPageState extends State<BloggerPostsPage> {
         children: [
           Expanded(
             child: filteredPosts.isEmpty
-                ? (searchController.text.isNotEmpty || selectedCategory != "Hepsi"
-                ? Center(
-              child: Text(
-                "Sonuç bulunamadı.",
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-            )
-                : Center(child: CircularProgressIndicator()))
+                ? (searchController.text.isNotEmpty ||
+                        selectedCategory != "Hepsi"
+                    ? Center(
+                        child: Text(
+                          "Sonuç bulunamadı.",
+                          style: TextStyle(fontSize: 18, color: Colors.grey),
+                        ),
+                      )
+                    : Center(child: CircularProgressIndicator()))
                 : ListView.builder(
-              itemCount: filteredPosts.length,
-              itemBuilder: (context, index) {
-                final post = filteredPosts[index];
-                return Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  elevation: 5,
-                  child: ListTile(
-                    title: Text(post['title'] ?? 'Başlık Yok'),
-                    subtitle: Text(
-                      DateFormat('dd MMM yyyy').format(
-                        DateTime.parse(post['published']),
-                      ),
-                    ),
-                    trailing: Icon(Icons.arrow_forward),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PostDetailPage(
-                            title: post['title'] ?? 'Başlık Yok',
-                            content: post['content'] ?? 'İçerik Yok',
+                    itemCount: filteredPosts.length,
+                    itemBuilder: (context, index) {
+                      final post = filteredPosts[index];
+                      return Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 5,
+                        child: ListTile(
+                          title: Text(post['title'] ?? 'Başlık Yok'),
+                          subtitle: Text(
+                            DateFormat('dd MMM yyyy').format(
+                              DateTime.parse(post['published']),
+                            ),
                           ),
+                          trailing: Icon(Icons.arrow_forward),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PostDetailPage(
+                                  title: post['title'] ?? 'Başlık Yok',
+                                  content: post['content'] ?? 'İçerik Yok',
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       );
                     },
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
@@ -236,10 +243,11 @@ class PostDetailPage extends StatelessWidget {
           style: {
             "img": Style(
               display: Display.block,
-              width: Width(100, Unit.percent),
+              width:
+                  Width(MediaQuery.of(context).size.width * 0.8, Unit.percent),
             ),
             "*": Style(
-              margin: Margins.zero,
+              margin: Margins.symmetric(vertical: 3, horizontal: 0),
               padding: HtmlPaddings.zero,
               fontSize: FontSize(16),
               lineHeight: LineHeight(1.5),

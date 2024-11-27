@@ -113,16 +113,29 @@ class _DynamicPageState extends State<DynamicPage> {
             ],
           ),
           actions: [
-            ElevatedButton(
-              style:
-                  ElevatedButton.styleFrom(backgroundColor: Colors.lightGreen),
-              onPressed: () {
-                _editExercise(index);
-                Navigator.pop(context); // Dialog'u kapat
-              },
-              child: Center(
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.lightGreen),
+                onPressed: () {
+                  _editExercise(index);
+                  Navigator.pop(context); // Dialog'u kapat
+                },
                 child: Text(
-                  "Egzersizi Güncelleyin",
+                  "Güncelle",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+            Expanded(
+              child: ElevatedButton(
+                style:
+                    ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                onPressed: () {
+                  Navigator.pop(context); // Dialog'u kapat
+                },
+                child: Text(
+                  "Vazgeç",
                   style: TextStyle(color: Colors.white),
                 ),
               ),
@@ -206,6 +219,7 @@ class _DynamicPageState extends State<DynamicPage> {
                     child: TextField(
                       controller: _repsController,
                       decoration: InputDecoration(labelText: "Tekrar Sayısı"),
+                      keyboardType: TextInputType.number,
                     ),
                   ),
                 ],
@@ -213,7 +227,8 @@ class _DynamicPageState extends State<DynamicPage> {
             ],
           ),
           actions: [
-            Center(
+            Expanded(
+              flex: 2,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.lightGreen),
@@ -223,6 +238,20 @@ class _DynamicPageState extends State<DynamicPage> {
                 },
                 child: Text(
                   "Egzersizi Kaydet",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: ElevatedButton(
+                style:
+                    ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                onPressed: () {
+                  Navigator.pop(context); // Dialog'u kapat
+                },
+                child: Text(
+                  "Vazgeç",
                   style: TextStyle(color: Colors.white),
                 ),
               ),
@@ -356,12 +385,21 @@ class WorkoutPage extends StatefulWidget {
 
 class _WorkoutPageState extends State<WorkoutPage> {
   List<Map<String, dynamic>> pages = [];
-  int pageCount = 1;
+  int _pageCount = 1;
   IconData _selectedIcon = Icons.fitness_center;
-  Color _iconColor = Colors.blue;
+  Color _iconColor = Colors.black;
   TextEditingController _pageController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    _loadPages(); // Sayfaları yükle
+    _loadPageCount(); // Toplam sayfa sayısını yükle
+  }
+
   void _addPage() async {
+    int currentPageCount = await DatabaseHelper.instance.getPageCount();
+
     if (_pageController.text.isNotEmpty) {
       final newPage = {
         'title': _pageController.text,
@@ -384,7 +422,30 @@ class _WorkoutPageState extends State<WorkoutPage> {
 
       _pageController.clear(); // Sayfa ismini temizle
       _selectedIcon = Icons.fitness_center; // Varsayılan ikon
-      _iconColor = Colors.blue; // Varsayılan renk
+      _iconColor = Colors.black; // Varsayılan renk
+    } else {
+      _loadPageCount();
+      final newPage = {
+        'title': 'Rutin ${currentPageCount + 1}',
+        'icon': _selectedIcon.codePoint.toString(),
+        'iconColor': _iconColor.value.toString(),
+      };
+      int id = await DatabaseHelper.instance.insertPage(newPage);
+      setState(() {
+        pages.add({
+          'id': id,
+          'title': newPage['title']!,
+          'icon': IconData(
+            int.parse(newPage['icon']!), // Null olmama garantisi
+            fontFamily: 'MaterialIcons',
+          ),
+          'iconColor':
+              Color(int.parse(newPage['iconColor']!)), // Null olmama garantisi
+        });
+      });
+      _pageController.clear(); // Sayfa ismini temizle
+      _selectedIcon = Icons.fitness_center; // Varsayılan ikon
+      _iconColor = Colors.black; // Varsayılan renk
     }
   }
 
@@ -426,11 +487,20 @@ class _WorkoutPageState extends State<WorkoutPage> {
         });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _loadPages();
+  void _loadPageCount() async {
+    final pageCount =
+        await DatabaseHelper.instance.getPageCount(); // Sayfa sayısını al
+    setState(() {
+      _pageCount = pageCount; // Toplam sayfa sayısını bir state değişkenine ata
+    });
   }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _loadPages();
+  //   _loadPageCount();
+  // }
 
   void _loadPages() async {
     final dbPages = await DatabaseHelper.instance.fetchPages();
@@ -456,126 +526,162 @@ class _WorkoutPageState extends State<WorkoutPage> {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        return SingleChildScrollView(
-          child: AlertDialog(
-            title: Text("Rutini Düzenle"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: _pageController,
-                  decoration: InputDecoration(
-                    labelText: "Rutin İsmi",
-                    border: OutlineInputBorder(),
+        return StatefulBuilder(builder: (context, setState) {
+          return SingleChildScrollView(
+            child: AlertDialog(
+              title: Text("Rutini Düzenle"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: _pageController,
+                    decoration: InputDecoration(
+                      labelText: "Rutin İsmi",
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  // İkon seçimi
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.fitness_center, size: 40),
+                        color: _selectedIcon == Icons.fitness_center
+                            ? _iconColor
+                            : Colors.grey,
+                        onPressed: () {
+                          setState(() {
+                            _selectedIcon = Icons.fitness_center;
+                          });
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.directions_run, size: 40),
+                        color: _selectedIcon == Icons.directions_run
+                            ? _iconColor
+                            : Colors.grey,
+                        onPressed: () {
+                          setState(() {
+                            _selectedIcon = Icons.directions_run;
+                          });
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.self_improvement, size: 40),
+                        color: _selectedIcon == Icons.self_improvement
+                            ? _iconColor
+                            : Colors.grey,
+                        onPressed: () {
+                          setState(() {
+                            _selectedIcon = Icons.self_improvement;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  // İkon rengi seçimi
+                  Row(
+                    children: [
+                      Expanded(
+                        child: IconButton(
+                          icon:
+                              Icon(Icons.circle, color: Colors.black, size: 30),
+                          onPressed: () {
+                            setState(() {
+                              _iconColor = Colors.black;
+                            });
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: IconButton(
+                          icon: Icon(Icons.circle,
+                              color: Colors.blueAccent, size: 30),
+                          onPressed: () {
+                            setState(() {
+                              _iconColor = Colors.blueAccent;
+                            });
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: IconButton(
+                          icon: Icon(Icons.circle,
+                              color: Colors.redAccent, size: 30),
+                          onPressed: () {
+                            setState(() {
+                              _iconColor = Colors.redAccent;
+                            });
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: IconButton(
+                          icon: Icon(Icons.circle,
+                              color: Colors.greenAccent, size: 30),
+                          onPressed: () {
+                            setState(() {
+                              _iconColor = Colors.greenAccent;
+                            });
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: IconButton(
+                          icon: Icon(Icons.circle,
+                              color: Colors.deepOrangeAccent, size: 30),
+                          onPressed: () {
+                            setState(() {
+                              _iconColor = Colors.deepOrangeAccent;
+                            });
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: IconButton(
+                          icon: Icon(Icons.circle,
+                              color: Colors.pinkAccent, size: 30),
+                          onPressed: () {
+                            setState(() {
+                              _iconColor = Colors.pinkAccent;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    // Veritabanında güncelle
+                    _updatePageInDatabase(index);
+
+                    // Dialog'u kapat
+                    Navigator.pop(dialogContext);
+                  },
+                  child: Text(
+                    "Güncelle",
+                    style: TextStyle(color: Colors.black, fontSize: 16.0),
                   ),
                 ),
-                SizedBox(height: 16),
-                // İkon seçimi
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.fitness_center, size: 40),
-                      color: _selectedIcon == Icons.fitness_center
-                          ? _iconColor
-                          : Colors.grey,
-                      onPressed: () {
-                        setState(() {
-                          _selectedIcon = Icons.fitness_center;
-                        });
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.directions_run, size: 40),
-                      color: _selectedIcon == Icons.directions_run
-                          ? _iconColor
-                          : Colors.grey,
-                      onPressed: () {
-                        setState(() {
-                          _selectedIcon = Icons.directions_run;
-                        });
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.self_improvement, size: 40),
-                      color: _selectedIcon == Icons.self_improvement
-                          ? _iconColor
-                          : Colors.grey,
-                      onPressed: () {
-                        setState(() {
-                          _selectedIcon = Icons.self_improvement;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                // İkon rengi seçimi
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.circle, color: Colors.blue, size: 30),
-                      onPressed: () {
-                        setState(() {
-                          _iconColor = Colors.blue;
-                        });
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.circle, color: Colors.red, size: 30),
-                      onPressed: () {
-                        setState(() {
-                          _iconColor = Colors.red;
-                        });
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.circle, color: Colors.green, size: 30),
-                      onPressed: () {
-                        setState(() {
-                          _iconColor = Colors.green;
-                        });
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.circle, color: Colors.orange, size: 30),
-                      onPressed: () {
-                        setState(() {
-                          _iconColor = Colors.orange;
-                        });
-                      },
-                    ),
-                  ],
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent),
+                  onPressed: () {
+                    Navigator.pop(dialogContext); // İptal
+                  },
+                  child: Text(
+                    "İptal",
+                    style: TextStyle(color: Colors.white, fontSize: 16.0),
+                  ),
                 ),
               ],
             ),
-            actions: [
-              ElevatedButton(
-                onPressed: () {
-                  // Veritabanında güncelle
-                  _updatePageInDatabase(index);
-
-                  // Dialog'u kapat
-                  Navigator.pop(dialogContext);
-                },
-                child: Text(
-                  "Güncelle",
-                  style: TextStyle(color: Colors.black, fontSize: 16.0),
-                ),
-              ),
-              ElevatedButton(
-                style:
-                    ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-                onPressed: () {
-                  Navigator.pop(dialogContext); // İptal
-                },
-                child: Text(
-                  "İptal",
-                  style: TextStyle(color: Colors.white, fontSize: 16.0),
-                ),
-              ),
-            ],
-          ),
-        );
+          );
+        });
       },
     );
   }
@@ -606,145 +712,224 @@ class _WorkoutPageState extends State<WorkoutPage> {
   void _showDialog() {
     _pageController.clear();
     _selectedIcon = Icons.fitness_center;
-    _iconColor = Colors.blue;
+    _iconColor = Colors.black;
     showDialog(
       context: context,
       builder: (context) {
-        return SingleChildScrollView(
-          child: AlertDialog(
-            title: Text("Rutin Oluşturun"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Sayfa ismi girişi
-                TextField(
-                  controller: _pageController,
-                  decoration: InputDecoration(
-                    labelText: "Rutin İsmi",
-                    border: OutlineInputBorder(),
+        return StatefulBuilder(builder: (context, setState) {
+          return SingleChildScrollView(
+            child: AlertDialog(
+              title: Text("Rutin Oluşturun"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Sayfa ismi girişi
+                  TextField(
+                    controller: _pageController,
+                    decoration: InputDecoration(
+                      labelText: "Rutin İsmi",
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ),
-                SizedBox(height: 16),
-                // İkon seçimi
-                Text("İkon"),
+                  SizedBox(height: 16),
+                  // İkon seçimi
+                  Text("İkon"),
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.fitness_center,
+                            size: 40,
+                            color: _selectedIcon == Icons.fitness_center
+                                ? _iconColor
+                                : Colors.grey),
+                        onPressed: () {
+                          setState(() {
+                            _selectedIcon = Icons.fitness_center;
+                          });
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.directions_run,
+                            size: 40,
+                            color: _selectedIcon == Icons.directions_run
+                                ? _iconColor
+                                : Colors.grey),
+                        onPressed: () {
+                          setState(() {
+                            _selectedIcon = Icons.directions_run;
+                          });
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.self_improvement,
+                            size: 40,
+                            color: _selectedIcon == Icons.self_improvement
+                                ? _iconColor
+                                : Colors.grey),
+                        onPressed: () {
+                          setState(() {
+                            _selectedIcon = Icons.self_improvement;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: 16),
+                  // İkon rengi seçimi
+                  Text("İkon Rengi"),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _iconColor = Colors.black;
+                            });
+                          },
+                          icon: Icon(
+                            Icons.circle,
+                            color: Colors.black,
+                            size: 30,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.circle,
+                            color: Colors.blueAccent,
+                            size: 30,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _iconColor = Colors.blueAccent;
+                            });
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.circle,
+                            color: Colors.redAccent,
+                            size: 30,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _iconColor = Colors.redAccent;
+                            });
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.circle,
+                            color: Colors.greenAccent,
+                            size: 30,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _iconColor = Colors.greenAccent;
+                            });
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.circle,
+                            color: Colors.deepOrangeAccent,
+                            size: 30,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _iconColor = Colors.deepOrangeAccent;
+                            });
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.circle,
+                            color: Colors.pinkAccent,
+                            size: 30,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _iconColor = Colors.pinkAccent;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
                 Row(
                   children: [
-                    IconButton(
-                      icon: Icon(
-                        Icons.fitness_center,
-                        size: 40,
-                        color: _iconColor,
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.lightGreen),
+                        onPressed: () {
+                          _addPage();
+                          Navigator.pop(context); // Dialog'u kapat
+                        },
+                        child: Center(
+                          child: Text(
+                            "Kaydet",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _selectedIcon = Icons.fitness_center;
-                        });
-                      },
                     ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.directions_run,
-                        size: 40,
-                        color: _iconColor,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _selectedIcon = Icons.directions_run;
-                        });
-                      },
+                    SizedBox(
+                      width: 16,
                     ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.self_improvement,
-                        size: 40,
-                        color: _iconColor,
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.redAccent),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          "Vazgeç",
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _selectedIcon = Icons.self_improvement;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                // İkon rengi seçimi
-                Text("İkon Rengi"),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                        Icons.circle,
-                        color: Colors.blue,
-                        size: 30,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _iconColor = Colors.blue;
-                        });
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.circle,
-                        color: Colors.red,
-                        size: 30,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _iconColor = Colors.red;
-                        });
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.circle,
-                        color: Colors.green,
-                        size: 30,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _iconColor = Colors.green;
-                        });
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.circle,
-                        color: Colors.deepOrangeAccent,
-                        size: 30,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _iconColor = Colors.deepOrangeAccent;
-                        });
-                      },
                     ),
                   ],
                 ),
               ],
             ),
-            actions: [
-              Center(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.lightGreen),
-                  onPressed: () {
-                    _addPage();
-                    Navigator.pop(context); // Dialog'u kapat
-                  },
-                  child: Text(
-                    "Rutini Kaydet",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
+          );
+        });
       },
     );
   }
+
+  // Widget _buildIconButton({
+  //   required IconData icon,
+  //   required int index,
+  //   required int selectedIndex,
+  //   required VoidCallback onPressed,
+  // }) {
+  //   final isSelected = index == selectedIndex;
+  //
+  //   return IconButton(
+  //     icon: Icon(
+  //       icon,
+  //       size: 40,
+  //       color: isSelected ? Colors.lightGreen : Colors.grey,
+  //     ),
+  //     onPressed: onPressed,
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {

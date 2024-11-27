@@ -172,6 +172,31 @@ class _MainMenuState extends State<MainMenu> {
             ),
           ),
         ),
+        // title: Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     Text(
+        //       'Fit Pill',
+        //       style: TextStyle(
+        //         fontSize: 30,
+        //         fontWeight: FontWeight.bold,
+        //         fontFamily: 'Pacifico',
+        //         color: Colors.white70,
+        //       ),
+        //     ),
+        //   ],
+        // ),
+        // centerTitle: true,
+        // flexibleSpace: Container(
+        //   decoration: BoxDecoration(
+        //     gradient: LinearGradient(
+        //       colors: [
+        //         Colors.green,
+        //         Colors.greenAccent,
+        //       ],
+        //     ),
+        //   ),
+        // ),
         actions: [
           IconButton(
             icon: Icon(Icons.menu),
