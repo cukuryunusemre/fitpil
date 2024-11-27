@@ -250,18 +250,23 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             SizedBox(height: 20),
             Expanded(
-              child: GridView.count(
-                crossAxisCount: 3, // Sağlı sollu üç sütun
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                children: [
-                  _buildInfoTile('Yaş', ageController.text, 'Yaş', ageController),
-                  _buildInfoTile('Boy (cm)', heightController.text, 'Boy (cm)', heightController),
-                  _buildInfoTile('Kilo (kg)', weightController.text, 'Kilo (kg)', weightController),
-                  _buildReadOnlyTile('Yağ Oranı', fatPercentage),
-                  _buildReadOnlyTile('BMI', BMI),
-                  _buildReadOnlyTile('Günlük Kalori', Kcal),
-                ],
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3, // 3 sütun
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 1, // Kutu oranı
+                ),
+                shrinkWrap: true,
+                itemCount: 6, // Kaç öğe olduğunu belirleyin
+                itemBuilder: (context, index) {
+                  if (index == 0) return _buildInfoTile('Yaş', ageController.text, 'Yaş', ageController);
+                  if (index == 1) return _buildInfoTile('Boy (cm)', heightController.text, 'Boy (cm)', heightController);
+                  if (index == 2) return _buildInfoTile('Kilo (kg)', weightController.text, 'Kilo (kg)', weightController);
+                  if (index == 3) return _buildReadOnlyTile('Yağ Oranı', fatPercentage);
+                  if (index == 4) return _buildReadOnlyTile('BMI', BMI);
+                  return _buildReadOnlyTile('Günlük Kalori', Kcal);
+                },
               ),
             ),
           ],

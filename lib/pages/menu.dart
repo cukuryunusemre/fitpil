@@ -49,7 +49,7 @@ class _MenuDrawerState extends State<MenuDrawer> {
               child: Column(
                 children: [
                   CircleAvatar(
-                    radius: 50, // Profil resmi çapı
+                    radius: 60, // Profil resmi çapı
                     backgroundImage: profileImage.isNotEmpty
                         ? FileImage(File(profileImage)) // Profil resmi dosyadan çekilir
                         : AssetImage('assets/default_user.png') as ImageProvider, // Varsayılan resim

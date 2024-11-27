@@ -69,18 +69,23 @@ class _BloggerPostsPageState extends State<BloggerPostsPage> {
               itemBuilder: (context, index) {
                 final post = posts[index];
                 return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  elevation: 5  ,
                   child: ListTile(
-                    title: Text(post['title'] ?? 'No Title'),
+                    title: Text(post['title'] ?? 'Başlık Yok'),
                     subtitle: Text(
                       DateFormat('dd MMM yyyy').format(DateTime.parse(post['published'])),
                     ),
+                    trailing: Icon(Icons.arrow_forward),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => PostDetailPage(
-                            title: post['title'] ?? 'No Title',
-                            content: post['content'] ?? 'No Content',
+                            title: post['title'] ?? 'Başlık Yok',
+                            content: post['content'] ?? 'İçerik Yok',
                           ),
                         ),
                       );
@@ -110,7 +115,10 @@ class PostDetailPage extends StatelessWidget {
         child: Html(
             data: content,
           style: {
-
+            "img": Style(
+              display: Display.block, // Resimleri blok halinde göster
+              width: Width(100, Unit.percent),
+            ),
             // Varsayılan olarak tüm stil özelliklerini sıfırlama
             "*": Style(
               margin: Margins.zero, // Tüm margin değerlerini sıfırla
@@ -132,6 +140,8 @@ class PostDetailPage extends StatelessWidget {
             "div": Style(
               alignment: Alignment.center, // Resmi kapsayan divleri ortala
             ),
+
+
           },
         ),
       ),
