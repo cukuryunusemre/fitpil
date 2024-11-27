@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_html/flutter_html.dart';
+import 'package:intl/intl.dart';
 
 class BloggerPostsPage extends StatefulWidget {
   @override
@@ -39,10 +41,10 @@ class _BloggerPostsPageState extends State<BloggerPostsPage> {
           posts = data['items'] ?? [];
         });
       } else {
-        print('Failed to load posts: ${response.statusCode}');
+        print('Sayfalar yüklenemedi: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching posts: $e');
+      print('Yayınlar yüklenirken hata oluştu: $e');
     }
   }
 
@@ -50,7 +52,15 @@ class _BloggerPostsPageState extends State<BloggerPostsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Blogger Postları"),
+        title: Text("Blog"),
+        centerTitle: true,
+    flexibleSpace: Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.blue, Colors.greenAccent],
+        ),
+      ),
+    ),
       ),
       body: posts.isEmpty
           ? Center(child: CircularProgressIndicator())
@@ -61,7 +71,9 @@ class _BloggerPostsPageState extends State<BloggerPostsPage> {
                 return Card(
                   child: ListTile(
                     title: Text(post['title'] ?? 'No Title'),
-                    subtitle: Text(post['published'] ?? 'No Date'),
+                    subtitle: Text(
+                      DateFormat('dd MMM yyyy').format(DateTime.parse(post['published'])),
+                    ),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -95,7 +107,33 @@ class PostDetailPage extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
-        child: Text(content),
+        child: Html(
+            data: content,
+          style: {
+
+            // Varsayılan olarak tüm stil özelliklerini sıfırlama
+            "*": Style(
+              margin: Margins.zero, // Tüm margin değerlerini sıfırla
+              padding: HtmlPaddings.zero, // Tüm padding değerlerini sıfırla
+              fontSize: FontSize(16), // Varsayılan font boyutu
+              lineHeight: LineHeight(1.5), // Varsayılan satır yüksekliği
+            ),
+            // Özel etiketler için margin/padding
+            "h2": Style(
+              margin: Margins.only(bottom: 12), // Başlıkların altına biraz boşluk bırak
+              fontSize: FontSize.large, // Büyük font boyutu
+              color: Colors.red, // Kırmızı renk
+            ),
+            "p": Style(
+              margin: Margins.only(bottom: 8), // Paragraflar arasına az boşluk bırak
+              fontSize: FontSize(14), // Daha küçük font boyutu
+              color: Colors.black,
+            ),
+            "div": Style(
+              alignment: Alignment.center, // Resmi kapsayan divleri ortala
+            ),
+          },
+        ),
       ),
     );
   }
