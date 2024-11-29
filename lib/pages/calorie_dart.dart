@@ -1,5 +1,5 @@
-import 'package:fitpil/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 TextEditingController fat_percentageController = TextEditingController();
 TextEditingController body_weightController = TextEditingController();
@@ -37,7 +37,7 @@ void showCaloriePage(BuildContext context) {
           child: Container(
               height: MediaQuery.of(context).size.height * 0.6,
               width: MediaQuery.of(context).size.width * 0.8,
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -45,7 +45,7 @@ void showCaloriePage(BuildContext context) {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        const Text(
                           "Kalori Hesaplayıcı",
                           style: TextStyle(
                               fontSize: 24.0,
@@ -58,22 +58,22 @@ void showCaloriePage(BuildContext context) {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: Text(
+                                  title: const Text(
                                     "Açıklama",
                                     style: TextStyle(color: Colors.lightGreen),
                                   ),
-                                  content: Text(
+                                  content: const Text(
                                     "Girilen yağ oranı ve vücut kütlesiyle BMR (bazal metabolizma hızı) "
                                     "ve günlük kalori ihtiyacınız hesaplanır. Kilo vermek için "
                                     "bu ihtiyacın %15 eksiğini, kilo almak için %10 fazlasını "
-                                    "alabilirsiniz.\nHesaplamada Katch-McArdle Formülü kullanılmaktadır.",
+                                    "alabilirsiniz.\n\nHesaplamada Katch-McArdle Formülü kullanılmaktadır.",
                                     style:
                                         TextStyle(fontSize: 15.0, height: 1.5),
                                   ),
                                   actions: [
                                     TextButton(
                                       onPressed: Navigator.of(context).pop,
-                                      child: Text(
+                                      child: const Text(
                                         "Anladım",
                                         style: TextStyle(
                                             color: Colors.lightGreen,
@@ -85,21 +85,22 @@ void showCaloriePage(BuildContext context) {
                               },
                             );
                           },
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.info,
                             color: Colors.lightGreen,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20.0,
                     ),
                     // Yağ Oranı TextField
                     TextField(
                       controller: fat_percentageController,
                       keyboardType: TextInputType.number,
-                      decoration: InputDecoration(labelText: "Yağ Oranı"),
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}$')),], //ondalıklı sayı izni
+                      decoration: const InputDecoration(labelText: "Yağ Oranı"),
                       onChanged: (_) =>
                           _calculateCalori(setState), // Hemen kontrol et
                     ),
@@ -107,14 +108,16 @@ void showCaloriePage(BuildContext context) {
                       height: 20,
                       child: Text(
                         fat_rate_warning,
-                        style: TextStyle(color: Colors.redAccent),
+                        style: const TextStyle(color: Colors.redAccent),
                       ),
                     ),
                     // Vücut Ağırlığı TextField
                     TextField(
                       controller: body_weightController,
                       keyboardType: TextInputType.number,
-                      decoration: InputDecoration(labelText: "Vücut Ağırlığı"),
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly,],
+                      decoration:
+                          const InputDecoration(labelText: "Vücut Ağırlığı"),
                       onChanged: (_) =>
                           _calculateCalori(setState), // Hemen kontrol et
                     ),
@@ -122,13 +125,13 @@ void showCaloriePage(BuildContext context) {
                       height: 20,
                       child: Text(
                         bw_warning,
-                        style: TextStyle(color: Colors.redAccent),
+                        style: const TextStyle(color: Colors.redAccent),
                       ),
                     ),
                     // Aktivite Seviyesi DropdownButton
                     DropdownButton<int>(
                       value: selectedIndex,
-                      hint: Text("Aktivite Seviyenizi Seçin"),
+                      hint: const Text("Aktivite Seviyenizi Seçin"),
                       isExpanded: true,
                       items: activity_level.asMap().entries.map((entry) {
                         int index = entry.key;
@@ -150,19 +153,19 @@ void showCaloriePage(BuildContext context) {
                         });
                       },
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20.0,
                     ),
                     // Sonuç Gösterimi
                     if (maintain_calorie != null)
                       Padding(
-                        padding: EdgeInsets.only(top: 20.0),
+                        padding: const EdgeInsets.only(top: 20.0),
                         child: Text(
                           "BMR Değeriniz: ${(bmr).toStringAsFixed(0)}\n"
                           "Kilonuzu korumak için : ${maintain_calorie!.isNaN ? "Tanımsız" : maintain_calorie!.toStringAsFixed(0)} kcal\n"
                           "Kilo vermek için : ${(maintain_calorie! - maintain_calorie! * 0.15).toStringAsFixed(0)} kcal\n"
                           "Kilo almak için : ${(maintain_calorie! + maintain_calorie! * 0.10).toStringAsFixed(0)} kcal",
-                          style: TextStyle(height: 1.5, fontSize: 16.0),
+                          style: const TextStyle(height: 1.5, fontSize: 16.0),
                         ),
                       ),
                   ],
@@ -178,8 +181,8 @@ void showCaloriePage(BuildContext context) {
 void _calculateCalori(StateSetter setState) {
   double fat = double.tryParse(fat_percentageController.text) ?? 0;
   double bw = double.tryParse(body_weightController.text) ?? 0;
-  double lean_body_mass = bw * (1 - (fat / 100));
-  bmr = 370 + (21.6 * lean_body_mass);
+  double leanBodyMass = bw * (1 - (fat / 100));
+  bmr = 370 + (21.6 * leanBodyMass);
 
   // Hata mesajlarını anında güncelle
   setState(() {

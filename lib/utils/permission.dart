@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 
 Future<bool> requestBodySensorsPermission() async {
   var status = await Permission.sensors.status;
@@ -56,8 +54,3 @@ Future<bool> requestStoragePermission() async {
 
   return status.isGranted; // İzin zaten verilmişse true döndür
 }
-
-
-
-
-

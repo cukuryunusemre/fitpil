@@ -2,13 +2,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:fitpil/permission.dart';
+import 'package:fitpil/utils/permission.dart';
+import 'package:fitpil/utils/snackbar_helper.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -19,6 +22,8 @@ class MyApp extends StatelessWidget {
 }
 
 class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -75,31 +80,33 @@ class _ProfilePageState extends State<ProfilePage> {
   void _showImageSourceSheet() {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
         return Container(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
+              const Text(
                 'Resim Kaynağı Seç',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ListTile(
-                leading: Icon(Icons.camera_alt, color: Colors.blue),
-                title: Text('Kameradan Çek'),
+                leading: const Icon(Icons.camera_alt, color: Colors.blue),
+                title: const Text('Kameradan Çek'),
                 onTap: () async {
-                  bool isGranted = await requestCameraPermission(); // Kamera iznini kontrol et
+                  bool isGranted =
+                      await requestCameraPermission(); // Kamera iznini kontrol et
                   if (isGranted) {
                     Navigator.pop(context);
-                    final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
+                    final pickedFile = await ImagePicker()
+                        .pickImage(source: ImageSource.camera);
                     if (pickedFile != null) {
                       setState(() {
                         _profileImage = File(pickedFile.path);
@@ -107,21 +114,27 @@ class _ProfilePageState extends State<ProfilePage> {
                       await _saveProfileData();
                     }
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Kamera izni gerekli!")),
+                    SnackbarHelper.show(
+                      context,
+                      message: 'Kamera izni gerekli!',
+                      icon: Icons.camera_alt_outlined,
+                      backgroundColor: Colors.redAccent,
                     );
+
                   }
                 },
               ),
-              Divider(),
+              const Divider(),
               ListTile(
-                leading: Icon(Icons.photo_library, color: Colors.green),
-                title: Text('Galeriden Seç'),
+                leading: const Icon(Icons.photo_library, color: Colors.green),
+                title: const Text('Galeriden Seç'),
                 onTap: () async {
-                  bool isGranted = await requestStoragePermission(); // Depolama iznini kontrol et
+                  bool isGranted =
+                      await requestStoragePermission(); // Depolama iznini kontrol et
                   if (isGranted) {
                     Navigator.pop(context); // Dialog'u kapat
-                    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+                    final pickedFile = await ImagePicker()
+                        .pickImage(source: ImageSource.gallery);
                     if (pickedFile != null) {
                       setState(() {
                         _profileImage = File(pickedFile.path);
@@ -129,8 +142,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       await _saveProfileData(); // Veriyi kaydet
                     }
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Depolama izni gerekli!")),
+                    SnackbarHelper.show(
+                      context,
+                      message: 'Depolama izni gerekli!',
+                      icon: Icons.storage_outlined,
+                      backgroundColor: Colors.redAccent,
                     );
                   }
                 },
@@ -164,40 +180,48 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Text(
                     '$label Düzenle',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: controller,
                     decoration: InputDecoration(
                       labelText: label,
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                     ),
-                    keyboardType: label == 'Yaş' || label == 'Boy (cm)' || label == 'Kilo (kg)'
+                    keyboardType: label == 'Yaş' ||
+                            label == 'Boy (cm)' ||
+                            label == 'Kilo (kg)'
                         ? TextInputType.number
                         : TextInputType.text,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return '$label boş olamaz.';
                       }
-                      if ((label == 'Yaş' || label == 'Boy (cm)' || label == 'Kilo (kg)') &&
+                      if ((label == 'Yaş' ||
+                              label == 'Boy (cm)' ||
+                              label == 'Kilo (kg)') &&
                           int.tryParse(value) == null) {
                         return 'Geçerli bir $label giriniz.';
                       }
-                      if (label == 'Yaş' && (int.parse(value) <= 10 || int.parse(value) > 100)) {
+                      if (label == 'Yaş' &&
+                          (int.parse(value) <= 10 || int.parse(value) > 100)) {
                         return 'Yaş 10 ile 100 arasında olmalıdır.';
                       }
-                      if (label == 'Kilo (kg)' && (int.parse(value) < 10 || int.parse(value) > 635)) {
+                      if (label == 'Kilo (kg)' &&
+                          (int.parse(value) < 10 || int.parse(value) > 635)) {
                         return 'Kilo 10 ile 635 arasında olmalıdır.';
                       }
-                      if (label == 'Boy (cm)' && (int.parse(value) < 50 || int.parse(value) > 250)) {
+                      if (label == 'Boy (cm)' &&
+                          (int.parse(value) < 50 || int.parse(value) > 250)) {
                         return 'Boy 50 ile 250 arasında olmalıdır.';
                       }
 
                       return null;
                     },
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
@@ -206,7 +230,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         Navigator.pop(context);
                       }
                     },
-                    child: Text('Kaydet'),
+                    child: const Text('Kaydet'),
                   ),
                 ],
               ),
@@ -230,8 +254,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 radius: 60,
                 backgroundImage: _profileImage != null
                     ? FileImage(_profileImage!)
-                    : AssetImage('images/user_icon.png') as ImageProvider,
-                child: Align(
+                    : const AssetImage('images/user_icon.png') as ImageProvider,
+                child: const Align(
                   alignment: Alignment.bottomRight,
                   child: CircleAvatar(
                     backgroundColor: Colors.blue,
@@ -245,32 +269,39 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  nameController.text.isEmpty ? 'İsim Soyisim' : nameController.text,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  nameController.text.isEmpty
+                      ? 'İsim Soyisim'
+                      : nameController.text,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 if (isEditMode)
                   IconButton(
-                    icon: Icon(Icons.edit, color: Colors.blue),
+                    icon: const Icon(Icons.edit, color: Colors.blue),
                     onPressed: () => _editField('Ad Soyad', nameController),
                   ),
               ],
             ),
-            SizedBox(height: 20),
-            Expanded( // Burası GridView'e doğru alan sağlayacak
+            const SizedBox(height: 20),
+            Expanded(
+              // Burası GridView'e doğru alan sağlayacak
               child: GridView.count(
                 crossAxisCount: 3,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 childAspectRatio: 0.9, // Kutu boyutunu daha dengeli yapar
                 children: [
-                  _buildInfoTile('Yaş', ageController.text, 'Yaş', ageController),
-                  _buildInfoTile('Boy (cm)', heightController.text, 'Boy (cm)', heightController),
-                  _buildInfoTile('Kilo (kg)', weightController.text, 'Kilo (kg)', weightController),
+                  _buildInfoTile(
+                      'Yaş', ageController.text, 'Yaş', ageController),
+                  _buildInfoTile('Boy (cm)', heightController.text, 'Boy (cm)',
+                      heightController),
+                  _buildInfoTile('Kilo (kg)', weightController.text,
+                      'Kilo (kg)', weightController),
                   _buildReadOnlyTile('Yağ Oranı', fatPercentage),
                   _buildReadOnlyTile('BMI', BMI),
                   _buildReadOnlyTile('Günlük Kalori', Kcal),
@@ -293,18 +324,20 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildInfoTile(String title, String value, String label, TextEditingController controller) {
+  Widget _buildInfoTile(String title, String value, String label,
+      TextEditingController controller) {
     return Card(
-      margin: EdgeInsets.all(4.0),
+      margin: const EdgeInsets.all(4.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(title, style: TextStyle(fontWeight: FontWeight.w600)),
-          SizedBox(height: 8),
-          Text(value.isEmpty ? 'Bilgi Yok' : value, style: TextStyle(color: Colors.grey[600])),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+          const SizedBox(height: 8),
+          Text(value.isEmpty ? 'Bilgi Yok' : value,
+              style: TextStyle(color: Colors.grey[600])),
           if (isEditMode)
             IconButton(
-              icon: Icon(Icons.edit, color: Colors.blue),
+              icon: const Icon(Icons.edit, color: Colors.blue),
               onPressed: () => _editField(label, controller),
             ),
         ],
@@ -314,12 +347,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildReadOnlyTile(String title, String value) {
     return Card(
-      margin: EdgeInsets.all(4.0),
+      margin: const EdgeInsets.all(4.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(title, style: TextStyle(fontWeight: FontWeight.w600)),
-          SizedBox(height: 8),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+          const SizedBox(height: 8),
           Text(value, style: TextStyle(color: Colors.grey[600])),
         ],
       ),

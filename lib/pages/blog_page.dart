@@ -6,6 +6,8 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 
 class BloggerPostsPage extends StatefulWidget {
+  const BloggerPostsPage({super.key});
+
   @override
   _BloggerPostsPageState createState() => _BloggerPostsPageState();
 }
@@ -99,13 +101,13 @@ class _BloggerPostsPageState extends State<BloggerPostsPage> {
           children: [
             Expanded(
               child: AnimatedContainer(
-                duration: Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
                 width: isSearchActive ? double.infinity : 0,
                 child: isSearchActive
                     ? TextField(
                         controller: searchController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'Ara...',
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(horizontal: 8),
@@ -128,7 +130,7 @@ class _BloggerPostsPageState extends State<BloggerPostsPage> {
               },
             ),
             PopupMenuButton<String>(
-              icon: Icon(Icons.menu), // Hamburger menü ikonu
+              icon: const Icon(Icons.menu), // Hamburger menü ikonu
               onSelected: (String value) {
                 filterByCategory(value);
               },
@@ -144,7 +146,7 @@ class _BloggerPostsPageState extends State<BloggerPostsPage> {
                               ? Colors.blue
                               : Colors.grey,
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
                           tag,
                           style: TextStyle(
@@ -165,7 +167,7 @@ class _BloggerPostsPageState extends State<BloggerPostsPage> {
           ],
         ),
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.blue, Colors.greenAccent],
             ),
@@ -178,13 +180,13 @@ class _BloggerPostsPageState extends State<BloggerPostsPage> {
             child: filteredPosts.isEmpty
                 ? (searchController.text.isNotEmpty ||
                         selectedCategory != "Hepsi"
-                    ? Center(
+                    ? const Center(
                         child: Text(
                           "Sonuç bulunamadı.",
                           style: TextStyle(fontSize: 18, color: Colors.grey),
                         ),
                       )
-                    : Center(child: CircularProgressIndicator()))
+                    : const Center(child: CircularProgressIndicator()))
                 : ListView.builder(
                     itemCount: filteredPosts.length,
                     itemBuilder: (context, index) {
@@ -201,7 +203,7 @@ class _BloggerPostsPageState extends State<BloggerPostsPage> {
                               DateTime.parse(post['published']),
                             ),
                           ),
-                          trailing: Icon(Icons.arrow_forward),
+                          trailing: const Icon(Icons.arrow_forward),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -228,7 +230,7 @@ class PostDetailPage extends StatelessWidget {
   final String title;
   final String content;
 
-  PostDetailPage({required this.title, required this.content});
+  const PostDetailPage({super.key, required this.title, required this.content});
 
   @override
   Widget build(BuildContext context) {
@@ -237,7 +239,7 @@ class PostDetailPage extends StatelessWidget {
         title: Text(title),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Html(
           data: content,
           style: {
@@ -250,7 +252,7 @@ class PostDetailPage extends StatelessWidget {
               margin: Margins.symmetric(vertical: 3, horizontal: 0),
               padding: HtmlPaddings.zero,
               fontSize: FontSize(16),
-              lineHeight: LineHeight(1.5),
+              lineHeight: const LineHeight(1.5),
             ),
           },
         ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ProgressPage extends StatefulWidget {
+  const ProgressPage({super.key});
+
   @override
   State<ProgressPage> createState() => _ProgressPageState();
 }
@@ -27,10 +29,10 @@ class _ProgressPageState extends State<ProgressPage>
       body: Column(
         children: [
           PreferredSize(
-            preferredSize: Size.fromHeight(300),
+            preferredSize: const Size.fromHeight(300),
             child: Container(
               child: Ink(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                       colors: [Colors.green, Colors.greenAccent],
                       begin: Alignment.topLeft,
@@ -44,7 +46,7 @@ class _ProgressPageState extends State<ProgressPage>
                           controller: _tabController,
                           isScrollable: false,
                           indicatorColor: Colors.white,
-                          tabs: [
+                          tabs: const [
                             Tab(
                                 icon: Icon(Icons.monitor_weight,
                                     color: Colors.white, size: 40)),

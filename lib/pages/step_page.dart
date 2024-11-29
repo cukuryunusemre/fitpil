@@ -4,6 +4,8 @@ import 'package:fl_chart/fl_chart.dart'; // Grafik kütüphanesi
 import 'package:pedometer/pedometer.dart';
 
 class StepTrackerPage extends StatefulWidget {
+  const StepTrackerPage({super.key});
+
   @override
   _StepTrackerPageState createState() => _StepTrackerPageState();
 }
@@ -38,21 +40,26 @@ class _StepTrackerPageState extends State<StepTrackerPage> {
 
   Future<void> _loadSavedSteps() async {
     final prefs = await SharedPreferences.getInstance();
-    final lastDate = prefs.getString('lastResetDate') ?? DateTime.now().toString();
-    final savedWeeklySteps = prefs.getStringList('weeklySteps')?.map((e) => int.parse(e)).toList() ?? List.filled(7, 0);
+    final lastDate =
+        prefs.getString('lastResetDate') ?? DateTime.now().toString();
+    final savedWeeklySteps =
+        prefs.getStringList('weeklySteps')?.map((e) => int.parse(e)).toList() ??
+            List.filled(7, 0);
 
     final currentDate = DateTime.now();
 
     // Günlük sıfırlama
     if (DateTime.parse(lastDate).day != currentDate.day) {
       setState(() {
-        int dayIndex = currentDate.weekday - 1; // Haftanın günü (1=Monday, 7=Sunday)
+        int dayIndex =
+            currentDate.weekday - 1; // Haftanın günü (1=Monday, 7=Sunday)
         _weeklySteps[dayIndex] = _todaySteps;
         _todaySteps = 0;
       });
 
       prefs.setString('lastResetDate', currentDate.toString());
-      prefs.setStringList('weeklySteps', _weeklySteps.map((e) => e.toString()).toList());
+      prefs.setStringList(
+          'weeklySteps', _weeklySteps.map((e) => e.toString()).toList());
     }
 
     setState(() {
@@ -60,7 +67,8 @@ class _StepTrackerPageState extends State<StepTrackerPage> {
     });
 
     if (DateTime.parse(lastDate).isBefore(currentDate)) {
-      int daysDifference = currentDate.difference(DateTime.parse(lastDate)).inDays;
+      int daysDifference =
+          currentDate.difference(DateTime.parse(lastDate)).inDays;
 
       for (int i = 1; i <= daysDifference; i++) {
         int index = (currentDate.weekday - i) % 7; // Haftanın günü
@@ -73,19 +81,19 @@ class _StepTrackerPageState extends State<StepTrackerPage> {
         _todaySteps = 0;
       });
     }
-
   }
 
   Future<void> _saveSteps() async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setStringList('weeklySteps', _weeklySteps.map((e) => e.toString()).toList());
+    prefs.setStringList(
+        'weeklySteps', _weeklySteps.map((e) => e.toString()).toList());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Adım Takibi ve Analiz'),
+        title: const Text('Adım Takibi ve Analiz'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -99,17 +107,22 @@ class _StepTrackerPageState extends State<StepTrackerPage> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    Text('Bugünkü Adımlar', style: TextStyle(fontSize: 20)),
-                    Text('$_todaySteps', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
-                    Divider(),
-                    Text('Haftalık Adımlar', style: TextStyle(fontSize: 20)),
+                    const Text('Bugünkü Adımlar',
+                        style: TextStyle(fontSize: 20)),
+                    Text('$_todaySteps',
+                        style: const TextStyle(
+                            fontSize: 40, fontWeight: FontWeight.bold)),
+                    const Divider(),
+                    const Text('Haftalık Adımlar',
+                        style: TextStyle(fontSize: 20)),
                     Text('${_weeklySteps.reduce((a, b) => a + b)}',
-                        style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
+                        style: const TextStyle(
+                            fontSize: 40, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Haftalık Adım Grafiği
             Expanded(
               child: Card(
@@ -126,27 +139,33 @@ class _StepTrackerPageState extends State<StepTrackerPage> {
                             getTitlesWidget: (value, meta) {
                               switch (value.toInt()) {
                                 case 0:
-                                  return Text('Pzt', style: TextStyle(fontSize: 12));
+                                  return const Text('Pzt',
+                                      style: TextStyle(fontSize: 12));
                                 case 1:
-                                  return Text('Sal', style: TextStyle(fontSize: 12));
+                                  return const Text('Sal',
+                                      style: TextStyle(fontSize: 12));
                                 case 2:
-                                  return Text('Çar', style: TextStyle(fontSize: 12));
+                                  return const Text('Çar',
+                                      style: TextStyle(fontSize: 12));
                                 case 3:
-                                  return Text('Per', style: TextStyle(fontSize: 12));
+                                  return const Text('Per',
+                                      style: TextStyle(fontSize: 12));
                                 case 4:
-                                  return Text('Cum', style: TextStyle(fontSize: 12));
+                                  return const Text('Cum',
+                                      style: TextStyle(fontSize: 12));
                                 case 5:
-                                  return Text('Cmt', style: TextStyle(fontSize: 12));
+                                  return const Text('Cmt',
+                                      style: TextStyle(fontSize: 12));
                                 case 6:
-                                  return Text('Paz', style: TextStyle(fontSize: 12));
+                                  return const Text('Paz',
+                                      style: TextStyle(fontSize: 12));
                                 default:
-                                  return Text('');
+                                  return const Text('');
                               }
                             },
                           ),
                         ),
                       ),
-
                       barGroups: _weeklySteps.asMap().entries.map((entry) {
                         int index = entry.key;
                         int steps = entry.value;
@@ -162,7 +181,6 @@ class _StepTrackerPageState extends State<StepTrackerPage> {
                           ],
                         );
                       }).toList(),
-
                     ),
                   ),
                 ),

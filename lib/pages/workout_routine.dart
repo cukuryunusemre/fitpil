@@ -13,8 +13,9 @@ class DynamicPage extends StatefulWidget {
   final IconData icon;
   final Color iconColor;
 
-  DynamicPage(
-      {required this.pageId,
+  const DynamicPage(
+      {super.key,
+      required this.pageId,
       required this.title,
       required this.icon,
       required this.iconColor});
@@ -25,9 +26,9 @@ class DynamicPage extends StatefulWidget {
 class _DynamicPageState extends State<DynamicPage> {
   List<Map<String, dynamic>> exercises = [];
   int exerciseCount = 1;
-  TextEditingController _exerciseController = TextEditingController();
-  TextEditingController _setsController = TextEditingController();
-  TextEditingController _repsController = TextEditingController();
+  final TextEditingController _exerciseController = TextEditingController();
+  final TextEditingController _setsController = TextEditingController();
+  final TextEditingController _repsController = TextEditingController();
 
   @override
   void initState() {
@@ -77,35 +78,36 @@ class _DynamicPageState extends State<DynamicPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Egzersizi Düzenle"),
+          title: const Text("Egzersizi Düzenle"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               // Sayfa ismi girişi
               TextField(
                 controller: _exerciseController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Egzersiz İsmi",
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               Row(
                 children: [
                   Expanded(
                     child: TextField(
                       controller: _setsController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: "Set Sayısı",
                       ),
                       keyboardType: TextInputType.number,
                     ),
                   ),
-                  SizedBox(width: 10.0),
+                  const SizedBox(width: 10.0),
                   Expanded(
                     child: TextField(
                       controller: _repsController,
-                      decoration: InputDecoration(labelText: "Tekrar Sayısı"),
+                      decoration:
+                          const InputDecoration(labelText: "Tekrar Sayısı"),
                     ),
                   ),
                 ],
@@ -121,7 +123,7 @@ class _DynamicPageState extends State<DynamicPage> {
                   _editExercise(index);
                   Navigator.pop(context); // Dialog'u kapat
                 },
-                child: Text(
+                child: const Text(
                   "Güncelle",
                   style: TextStyle(color: Colors.white),
                 ),
@@ -134,7 +136,7 @@ class _DynamicPageState extends State<DynamicPage> {
                 onPressed: () {
                   Navigator.pop(context); // Dialog'u kapat
                 },
-                child: Text(
+                child: const Text(
                   "Vazgeç",
                   style: TextStyle(color: Colors.white),
                 ),
@@ -191,34 +193,35 @@ class _DynamicPageState extends State<DynamicPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Egzersiz Oluşturun"),
+          title: const Text("Egzersiz Oluşturun"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               // Sayfa ismi girişi
               TextField(
                 controller: _exerciseController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Egzersiz İsmi",
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
                     child: TextField(
                       controller: _setsController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: "Set Sayısı",
                       ),
                       keyboardType: TextInputType.number,
                     ),
                   ),
-                  SizedBox(width: 10.0),
+                  const SizedBox(width: 10.0),
                   Expanded(
                     child: TextField(
                       controller: _repsController,
-                      decoration: InputDecoration(labelText: "Tekrar Sayısı"),
+                      decoration:
+                          const InputDecoration(labelText: "Tekrar Sayısı"),
                       keyboardType: TextInputType.number,
                     ),
                   ),
@@ -236,7 +239,7 @@ class _DynamicPageState extends State<DynamicPage> {
                   _addExercise();
                   Navigator.pop(context); // Dialog'u kapat
                 },
-                child: Text(
+                child: const Text(
                   "Egzersizi Kaydet",
                   style: TextStyle(color: Colors.white),
                 ),
@@ -250,7 +253,7 @@ class _DynamicPageState extends State<DynamicPage> {
                 onPressed: () {
                   Navigator.pop(context); // Dialog'u kapat
                 },
-                child: Text(
+                child: const Text(
                   "Vazgeç",
                   style: TextStyle(color: Colors.white),
                 ),
@@ -270,7 +273,7 @@ class _DynamicPageState extends State<DynamicPage> {
         automaticallyImplyLeading:
             false, // Varsayılan leading özelliğini devre dışı bırak
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
                 Colors.green, // Başlangıç rengi
@@ -290,7 +293,7 @@ class _DynamicPageState extends State<DynamicPage> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_back,
                       color: Colors.white,
                     ),
@@ -304,14 +307,14 @@ class _DynamicPageState extends State<DynamicPage> {
                     children: [
                       Text(
                         widget.title,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Pacifico',
                           color: Colors.white70,
                         ),
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                     ],
                   ),
                 ),
@@ -328,7 +331,7 @@ class _DynamicPageState extends State<DynamicPage> {
               key: ValueKey(exercises[index]['id']),
               leading: ReorderableDragStartListener(
                 index: index,
-                child: Icon(
+                child: const Icon(
                   Icons.drag_handle,
                   color: Colors.orangeAccent,
                 ),
@@ -338,11 +341,12 @@ class _DynamicPageState extends State<DynamicPage> {
                 children: [
                   Text(
                     exercises[index]['title'],
-                    style: TextStyle(fontSize: 18.0),
+                    style: const TextStyle(fontSize: 18.0),
                   ),
                   Text(
                     "${exercises[index]['sets']}x${exercises[index]['reps']}",
-                    style: TextStyle(fontSize: 14.0, color: Colors.blueGrey),
+                    style:
+                        const TextStyle(fontSize: 14.0, color: Colors.blueGrey),
                   ),
                 ],
               ),
@@ -354,14 +358,14 @@ class _DynamicPageState extends State<DynamicPage> {
                       print("deneme");
                       _editExerciseDialog(index);
                     },
-                    icon:
-                        Icon(Icons.edit, color: Colors.orangeAccent, size: 20),
+                    icon: const Icon(Icons.edit,
+                        color: Colors.orangeAccent, size: 20),
                   ),
                   IconButton(
                     onPressed: () {
                       _deleteExercise(index);
                     },
-                    icon: Icon(Icons.delete, color: Colors.red, size: 20),
+                    icon: const Icon(Icons.delete, color: Colors.red, size: 20),
                   ),
                 ],
               ),
@@ -371,14 +375,16 @@ class _DynamicPageState extends State<DynamicPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.lightGreen,
         onPressed: _createExercise,
-        child: Icon(Icons.add),
         tooltip: "Yeni Egzersiz ekle",
+        child: Icon(Icons.add),
       ),
     );
   }
 }
 
 class WorkoutPage extends StatefulWidget {
+  const WorkoutPage({super.key});
+
   @override
   State<WorkoutPage> createState() => _WorkoutPageState();
 }
@@ -388,7 +394,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
   int _pageCount = 1;
   IconData _selectedIcon = Icons.fitness_center;
   Color _iconColor = Colors.black;
-  TextEditingController _pageController = TextEditingController();
+  final TextEditingController _pageController = TextEditingController();
 
   @override
   void initState() {
@@ -462,7 +468,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
         context: context,
         builder: (BuildContext dialogContext) {
           return AlertDialog(
-            title: Text("Sil"),
+            title: const Text("Sil"),
             content: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -474,13 +480,13 @@ class _WorkoutPageState extends State<WorkoutPage> {
                   _deletePage(index);
                   Navigator.pop(dialogContext);
                 },
-                child: Text("Sil"),
+                child: const Text("Sil"),
               ),
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(dialogContext);
                 },
-                child: Text("Kapat"),
+                child: const Text("Kapat"),
               ),
             ],
           );
@@ -529,23 +535,23 @@ class _WorkoutPageState extends State<WorkoutPage> {
         return StatefulBuilder(builder: (context, setState) {
           return SingleChildScrollView(
             child: AlertDialog(
-              title: Text("Rutini Düzenle"),
+              title: const Text("Rutini Düzenle"),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
                     controller: _pageController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: "Rutin İsmi",
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   // İkon seçimi
                   Row(
                     children: [
                       IconButton(
-                        icon: Icon(Icons.fitness_center, size: 40),
+                        icon: const Icon(Icons.fitness_center, size: 40),
                         color: _selectedIcon == Icons.fitness_center
                             ? _iconColor
                             : Colors.grey,
@@ -556,7 +562,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                         },
                       ),
                       IconButton(
-                        icon: Icon(Icons.directions_run, size: 40),
+                        icon: const Icon(Icons.directions_run, size: 40),
                         color: _selectedIcon == Icons.directions_run
                             ? _iconColor
                             : Colors.grey,
@@ -567,7 +573,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                         },
                       ),
                       IconButton(
-                        icon: Icon(Icons.self_improvement, size: 40),
+                        icon: const Icon(Icons.self_improvement, size: 40),
                         color: _selectedIcon == Icons.self_improvement
                             ? _iconColor
                             : Colors.grey,
@@ -579,14 +585,14 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   // İkon rengi seçimi
                   Row(
                     children: [
                       Expanded(
                         child: IconButton(
-                          icon:
-                              Icon(Icons.circle, color: Colors.black, size: 30),
+                          icon: const Icon(Icons.circle,
+                              color: Colors.black, size: 30),
                           onPressed: () {
                             setState(() {
                               _iconColor = Colors.black;
@@ -596,7 +602,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: Icon(Icons.circle,
+                          icon: const Icon(Icons.circle,
                               color: Colors.blueAccent, size: 30),
                           onPressed: () {
                             setState(() {
@@ -607,7 +613,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: Icon(Icons.circle,
+                          icon: const Icon(Icons.circle,
                               color: Colors.redAccent, size: 30),
                           onPressed: () {
                             setState(() {
@@ -618,7 +624,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: Icon(Icons.circle,
+                          icon: const Icon(Icons.circle,
                               color: Colors.greenAccent, size: 30),
                           onPressed: () {
                             setState(() {
@@ -629,7 +635,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: Icon(Icons.circle,
+                          icon: const Icon(Icons.circle,
                               color: Colors.deepOrangeAccent, size: 30),
                           onPressed: () {
                             setState(() {
@@ -640,7 +646,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: Icon(Icons.circle,
+                          icon: const Icon(Icons.circle,
                               color: Colors.pinkAccent, size: 30),
                           onPressed: () {
                             setState(() {
@@ -662,7 +668,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                     // Dialog'u kapat
                     Navigator.pop(dialogContext);
                   },
-                  child: Text(
+                  child: const Text(
                     "Güncelle",
                     style: TextStyle(color: Colors.black, fontSize: 16.0),
                   ),
@@ -673,7 +679,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                   onPressed: () {
                     Navigator.pop(dialogContext); // İptal
                   },
-                  child: Text(
+                  child: const Text(
                     "İptal",
                     style: TextStyle(color: Colors.white, fontSize: 16.0),
                   ),
@@ -719,21 +725,21 @@ class _WorkoutPageState extends State<WorkoutPage> {
         return StatefulBuilder(builder: (context, setState) {
           return SingleChildScrollView(
             child: AlertDialog(
-              title: Text("Rutin Oluşturun"),
+              title: const Text("Rutin Oluşturun"),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Sayfa ismi girişi
                   TextField(
                     controller: _pageController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: "Rutin İsmi",
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   // İkon seçimi
-                  Text("İkon"),
+                  const Text("İkon"),
                   Row(
                     children: [
                       IconButton(
@@ -775,9 +781,9 @@ class _WorkoutPageState extends State<WorkoutPage> {
                     ],
                   ),
 
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   // İkon rengi seçimi
-                  Text("İkon Rengi"),
+                  const Text("İkon Rengi"),
                   Row(
                     children: [
                       Expanded(
@@ -787,7 +793,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                               _iconColor = Colors.black;
                             });
                           },
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.circle,
                             color: Colors.black,
                             size: 30,
@@ -796,7 +802,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.circle,
                             color: Colors.blueAccent,
                             size: 30,
@@ -810,7 +816,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.circle,
                             color: Colors.redAccent,
                             size: 30,
@@ -824,7 +830,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.circle,
                             color: Colors.greenAccent,
                             size: 30,
@@ -838,7 +844,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.circle,
                             color: Colors.deepOrangeAccent,
                             size: 30,
@@ -852,7 +858,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.circle,
                             color: Colors.pinkAccent,
                             size: 30,
@@ -879,7 +885,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                           _addPage();
                           Navigator.pop(context); // Dialog'u kapat
                         },
-                        child: Center(
+                        child: const Center(
                           child: Text(
                             "Kaydet",
                             style: TextStyle(color: Colors.white),
@@ -887,7 +893,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 16,
                     ),
                     Expanded(
@@ -897,7 +903,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        child: Text(
+                        child: const Text(
                           "Vazgeç",
                           style: TextStyle(color: Colors.white),
                         ),
@@ -940,7 +946,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
         automaticallyImplyLeading:
             false, // Varsayılan leading özelliğini devre dışı bırak
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [
                 Colors.green, // Başlangıç rengi
@@ -960,14 +966,14 @@ class _WorkoutPageState extends State<WorkoutPage> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_back,
                       color: Colors.white,
                     ),
                   ),
                 ),
                 // Başlık ve İkon
-                Align(
+                const Align(
                   alignment: Alignment.center,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -997,7 +1003,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
             ),
             title: Text(
               pages[index]['title'],
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -1042,8 +1048,8 @@ class _WorkoutPageState extends State<WorkoutPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.lightGreen,
         onPressed: _showDialog,
-        child: Icon(Icons.add),
         tooltip: "Yeni Sayfa ekle",
+        child: Icon(Icons.add),
       ),
     );
   }

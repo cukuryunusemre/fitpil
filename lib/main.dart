@@ -21,6 +21,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -61,10 +63,12 @@ Future<void> checkPermissions() async {
 }
 
 class SplashScreen extends StatelessWidget {
+  const SplashScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     // Splash ekranından ana menüye yönlendirme
-    Timer(Duration(seconds: 3), () async {
+    Timer(const Duration(seconds: 3), () async {
       Navigator.pushReplacementNamed(context, '/main_menu');
     });
 
@@ -79,8 +83,8 @@ class SplashScreen extends StatelessWidget {
               width: 150, // Splash ekranı logo genişliği
               height: 150, // Splash ekranı logo yüksekliği
             ),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               "Fit Pill",
               style: TextStyle(
                 fontSize: 28,
@@ -89,8 +93,8 @@ class SplashScreen extends StatelessWidget {
                 color: Colors.green,
               ),
             ),
-            SizedBox(height: 20),
-            CircularProgressIndicator(
+            const SizedBox(height: 20),
+            const CircularProgressIndicator(
                 color: Colors.green), // Yükleme animasyonu
           ],
         ),
@@ -100,6 +104,8 @@ class SplashScreen extends StatelessWidget {
 }
 
 class MainMenu extends StatefulWidget {
+  const MainMenu({super.key});
+
   @override
   _MainMenuState createState() => _MainMenuState();
 }
@@ -120,7 +126,7 @@ class _MainMenuState extends State<MainMenu> {
     });
     _pageController.animateToPage(
       index,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
   }
@@ -140,7 +146,7 @@ class _MainMenuState extends State<MainMenu> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         flexibleSpace: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Colors.green, Colors.greenAccent],
             ),
@@ -154,10 +160,10 @@ class _MainMenuState extends State<MainMenu> {
                     onPressed: () {
                       _scaffoldKey.currentState?.openDrawer();
                     },
-                    icon: Icon(Icons.menu),
+                    icon: const Icon(Icons.menu),
                   ),
                 ),
-                Align(
+                const Align(
                   alignment: Alignment.center,
                   child: Text(
                     "Fit Pill",
@@ -199,7 +205,7 @@ class _MainMenuState extends State<MainMenu> {
         // ),
         actions: [
           IconButton(
-            icon: Icon(Icons.menu),
+            icon: const Icon(Icons.menu),
             onPressed: () {
               _scaffoldKey.currentState?.openEndDrawer(); // Sağdaki menüyü aç
             },

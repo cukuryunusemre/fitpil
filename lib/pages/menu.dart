@@ -3,15 +3,16 @@ import 'package:fitpil/pages/blog_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class MenuDrawer extends StatefulWidget {
+  const MenuDrawer({super.key});
+
   @override
   _MenuDrawerState createState() => _MenuDrawerState();
 }
 
 class _MenuDrawerState extends State<MenuDrawer> {
   String name = 'Bilinmiyor'; // Varsayılan ad
-  String profileImage = 'images/user_icon.png';  // Varsayılan resim yolu
+  String profileImage = 'images/user_icon.png'; // Varsayılan resim yolu
 
   @override
   void initState() {
@@ -38,28 +39,26 @@ class _MenuDrawerState extends State<MenuDrawer> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: [
-                      Colors.green,
-                      Colors.greenAccent
-                    ],
-                )
-              ),
+              decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                colors: [Colors.green, Colors.greenAccent],
+              )),
               child: Column(
                 children: [
                   CircleAvatar(
                     radius: 60, // Profil resmi çapı
                     backgroundImage: profileImage.isNotEmpty
-                        ? FileImage(File(profileImage)) // Profil resmi dosyadan çekilir
-                        : AssetImage('assets/default_user.png') as ImageProvider, // Varsayılan resim
+                        ? FileImage(
+                            File(profileImage)) // Profil resmi dosyadan çekilir
+                        : const AssetImage('assets/default_user.png')
+                            as ImageProvider, // Varsayılan resim
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                 ],
               ),
             ),
             ListTile(
-              title: Text('Blog'),
+              title: const Text('Blog'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -70,11 +69,11 @@ class _MenuDrawerState extends State<MenuDrawer> {
               },
             ),
             ListTile(
-              title: Text('Seçenek 2'),
+              title: const Text('Seçenek 2'),
               onTap: () {},
             ),
             ListTile(
-              title: Text('Seçenek 3'),
+              title: const Text('Seçenek 3'),
               onTap: () {},
             ),
           ],

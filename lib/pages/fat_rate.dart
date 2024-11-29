@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:math';
 
 String _selectedOption = "Erkek";
@@ -28,7 +29,7 @@ void showFatRatePage(BuildContext context) {
                 heightFactor:
                     MediaQuery.of(context).size.height > 800 ? 0.62 : 0.7,
                 child: Container(
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     width: MediaQuery.of(context).size.width * 0.85,
                     child: SingleChildScrollView(
                       child: Column(
@@ -38,7 +39,7 @@ void showFatRatePage(BuildContext context) {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Expanded(
+                              const Expanded(
                                 child: Text(
                                   "Yağ Oranı Hesaplayıcı",
                                   style: TextStyle(
@@ -53,12 +54,12 @@ void showFatRatePage(BuildContext context) {
                                     context: context,
                                     builder: (BuildContext context) {
                                       return AlertDialog(
-                                        title: Text(
+                                        title: const Text(
                                           "Açıklama",
                                           style: TextStyle(
                                               color: Colors.lightGreen),
                                         ),
-                                        content: Text(
+                                        content: const Text(
                                           "Ölçüm yaparken dikkat etmeniz gerekenler\n"
                                           "\tBoyun: adem elması etrafından\n"
                                           "\tBel: göbek deliği etrafından\n"
@@ -71,7 +72,7 @@ void showFatRatePage(BuildContext context) {
                                           TextButton(
                                             onPressed:
                                                 Navigator.of(context).pop,
-                                            child: Text(
+                                            child: const Text(
                                               "Anladım",
                                               style: TextStyle(
                                                   color: Colors.lightGreen,
@@ -83,7 +84,7 @@ void showFatRatePage(BuildContext context) {
                                     },
                                   );
                                 },
-                                icon: Expanded(
+                                icon: const Expanded(
                                   child: Icon(
                                     Icons.info,
                                     color: Colors.lightGreen,
@@ -92,7 +93,7 @@ void showFatRatePage(BuildContext context) {
                               ),
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 6.0,
                           ),
                           Row(
@@ -101,9 +102,9 @@ void showFatRatePage(BuildContext context) {
                                 segments: <ButtonSegment<String>>[
                                   ButtonSegment<String>(
                                     value: "Erkek",
-                                    label: Container(
+                                    label: SizedBox(
                                       width: 75.0,
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.man,
                                         size: 40,
                                         color: Colors.blue,
@@ -112,9 +113,9 @@ void showFatRatePage(BuildContext context) {
                                   ),
                                   ButtonSegment<String>(
                                     value: "Kadın",
-                                    label: Container(
+                                    label: SizedBox(
                                       width: 75.0,
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.woman,
                                         size: 40,
                                         color: Colors.pinkAccent,
@@ -124,19 +125,17 @@ void showFatRatePage(BuildContext context) {
                                 ],
                                 selected: <String>{_selectedOption},
                                 style: ButtonStyle(
-                                  side: MaterialStateProperty.resolveWith<
+                                  side: WidgetStateProperty.resolveWith<
                                       BorderSide?>((states) {
-                                    if (states
-                                        .contains(MaterialState.selected)) {
+                                    if (states.contains(WidgetState.selected)) {
                                       return BorderSide.none;
                                     }
                                     return BorderSide.none;
                                   }),
                                   backgroundColor:
-                                      MaterialStateProperty.resolveWith<Color?>(
+                                      WidgetStateProperty.resolveWith<Color?>(
                                           (states) {
-                                    if (states
-                                        .contains(MaterialState.selected)) {
+                                    if (states.contains(WidgetState.selected)) {
                                       return Colors
                                           .lightGreen; // Seçili buton rengi
                                     }
@@ -156,60 +155,65 @@ void showFatRatePage(BuildContext context) {
                           TextField(
                             controller: _heightController,
                             keyboardType: TextInputType.number,
-                            decoration: InputDecoration(labelText: "Boy (cm)"),
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly,],
+                            decoration:
+                                const InputDecoration(labelText: "Boy (cm)"),
                             onChanged: (value) {
                               setState(() {
                                 _calculateFatRate(setState);
                               });
                             },
                           ),
-                          SizedBox(height: 6.0),
+                          const SizedBox(height: 6.0),
                           TextField(
                             controller: _neckController,
                             keyboardType: TextInputType.number,
-                            decoration:
-                                InputDecoration(labelText: "Boyun Çevresi"),
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly,],
+                            decoration: const InputDecoration(
+                                labelText: "Boyun Çevresi"),
                             onChanged: (value) {
                               setState(() {
                                 _calculateFatRate(setState);
                               });
                             },
                           ),
-                          SizedBox(height: 6.0),
+                          const SizedBox(height: 6.0),
                           TextField(
                             controller: _waistController,
                             keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly,],
                             decoration:
-                                InputDecoration(labelText: "Bel Çevresi"),
+                                const InputDecoration(labelText: "Bel Çevresi"),
                             onChanged: (value) {
                               setState(() {
                                 _calculateFatRate(setState);
                               });
                             },
                           ),
-                          SizedBox(height: 6.0),
+                          const SizedBox(height: 6.0),
                           if (_selectedOption == "Kadın")
                             TextField(
                               controller: _hipController,
                               keyboardType: TextInputType.number,
-                              decoration:
-                                  InputDecoration(labelText: "Kalça Çevresi"),
+                              inputFormatters: [FilteringTextInputFormatter.digitsOnly,],
+                              decoration: const InputDecoration(
+                                  labelText: "Kalça Çevresi"),
                               onChanged: (value) {
                                 setState(() {
                                   _calculateFatRate(setState);
                                 });
                               },
                             ),
-                          SizedBox(height: 16.0),
+                          const SizedBox(height: 16.0),
                           TextField(
                             controller: _resultController,
                             readOnly: true,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: "Yağ Oranı",
                               border: OutlineInputBorder(),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 6.0,
                           ),
                         ],
