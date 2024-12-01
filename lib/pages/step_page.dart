@@ -40,45 +40,46 @@ class _StepTrackerPageState extends State<StepTrackerPage> {
 
   Future<void> _loadSavedSteps() async {
     final prefs = await SharedPreferences.getInstance();
-    final lastDate =
-        prefs.getString('lastResetDate') ?? DateTime.now().toString();
+    final lastDate = prefs.getString('lastResetDate');
     final savedWeeklySteps =
         prefs.getStringList('weeklySteps')?.map((e) => int.parse(e)).toList() ??
             List.filled(7, 0);
 
     final currentDate = DateTime.now();
+    final lastResetDate =
+    lastDate != null ? DateTime.parse(lastDate) : currentDate;
 
-    // Günlük sıfırlama
-    if (DateTime.parse(lastDate).day != currentDate.day) {
-      setState(() {
-        int dayIndex =
-            currentDate.weekday - 1; // Haftanın günü (1=Monday, 7=Sunday)
-        _weeklySteps[dayIndex] = _todaySteps;
-        _todaySteps = 0;
-      });
-
-      prefs.setString('lastResetDate', currentDate.toString());
-      prefs.setStringList(
-          'weeklySteps', _weeklySteps.map((e) => e.toString()).toList());
+    final daysDifference = currentDate.difference(lastResetDate).inDays;
+    if (daysDifference > 0) {
+      // Her günü tek tek kontrol et ve sıfırla
+      for (int i = 1; i <= daysDifference && i < 7; i++) {
+        int index = (currentDate.weekday - i) % 7;
+        _weeklySteps[index] = 0;
+      }
     }
 
-    setState(() {
-      _weeklySteps = savedWeeklySteps;
-    });
 
-    if (DateTime.parse(lastDate).isBefore(currentDate)) {
-      int daysDifference =
-          currentDate.difference(DateTime.parse(lastDate)).inDays;
-
-      for (int i = 1; i <= daysDifference; i++) {
-        int index = (currentDate.weekday - i) % 7; // Haftanın günü
-        _weeklySteps[index] = 0; // Geçmiş günlerin adım sayısını sıfırla
-      }
+    // Günlük sıfırlama
+    if (lastResetDate.day != currentDate.day) {
+      int previousDayIndex = lastResetDate.weekday - 1;
+      int currentDayIndex = currentDate.weekday - 1;
 
       setState(() {
-        int dayIndex = currentDate.weekday - 1;
-        _weeklySteps[dayIndex] = _todaySteps;
+        // Eski günün adımlarını haftalık listeye ekle
+        _weeklySteps[previousDayIndex] = _todaySteps;
+
+        // Günlük adımları sıfırla
         _todaySteps = 0;
+
+        // Haftalık adımları kaydet
+        prefs.setStringList(
+            'weeklySteps', _weeklySteps.map((e) => e.toString()).toList());
+        prefs.setString('lastResetDate', currentDate.toIso8601String());
+      });
+    } else {
+      // Gün sıfırlanmadıysa kaydedilmiş haftalık adımları yükle
+      setState(() {
+        _weeklySteps = savedWeeklySteps;
       });
     }
   }

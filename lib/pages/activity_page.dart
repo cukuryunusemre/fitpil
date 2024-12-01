@@ -74,49 +74,38 @@ class _ActivityPageState extends State<ActivityPage> {
             currentStep = step;
           });
         },
-        onStepContinue: () {
-          if (currentStep < 3) {
-            // Kilo kontrolü
-            if (currentStep == 0) {
-              if (weightController.text.isEmpty || double.tryParse(weightController.text) == null) {
+          onStepContinue: () {
+            if (currentStep < 3) {
+              if (currentStep == 0 && weight == null) {
                 SnackbarHelper.show(
                   context,
                   message: 'Lütfen geçerli bir kilo girin!',
                   icon: Icons.error_outline,
                   backgroundColor: Colors.redAccent,
                 );
-
                 return;
               }
               setState(() {
-                weight = double.tryParse(weightController.text);
-              });
-            }
-
-            // Diğer adımlara geçiş
-            setState(() {
-              currentStep++;
-            });
-          } else {
-            // Hesaplama adımı
-            if (selectedActivity != null && selectedTempo != null && weight != null) {
-              double met = activities[selectedActivity!]![selectedTempo!]!;
-              double durationHours = duration / 60.0; // Süreyi saate çevir
-              setState(() {
-                caloriesBurned = met * weight! * durationHours;
+                currentStep++;
               });
             } else {
-              SnackbarHelper.show(
-                context,
-                message: 'Lütfen tüm seçimleri tamamlayınız',
-                icon: Icons.error_outline,
-                backgroundColor: Colors.redAccent,
-              );
-
+              if (selectedActivity != null && selectedTempo != null && weight != null) {
+                double met = activities[selectedActivity!]![selectedTempo!]!;
+                double durationHours = duration / 60.0; // Süreyi saate çevir
+                setState(() {
+                  caloriesBurned = met * weight! * durationHours;
+                });
+              } else {
+                SnackbarHelper.show(
+                  context,
+                  message: 'Lütfen tüm seçimleri tamamlayınız',
+                  icon: Icons.error_outline,
+                  backgroundColor: Colors.redAccent,
+                );
+              }
             }
-          }
-        },
-        onStepCancel: () {
+          },
+          onStepCancel: () {
           if (currentStep > 0) {
             setState(() {
               currentStep--;
@@ -176,11 +165,25 @@ class _ActivityPageState extends State<ActivityPage> {
                         vertical: 10,
                       ),
                     ),
+                    onChanged: (value) {
+                      // Sadece geçerli sayıları kontrol et
+                      double? enteredWeight = double.tryParse(value);
+                      if (enteredWeight != null && enteredWeight >= 30 && enteredWeight <= 300) {
+                        setState(() {
+                          weight = enteredWeight;
+                        });
+                      } else {
+                        setState(() {
+                          weight = null; // Geçersiz kilo
+                        });
+                      }
+                    },
                   ),
                 ),
               ],
             ),
           ),
+
           Step(
             title: Text('Aktivite Seç'),
             content: Row(

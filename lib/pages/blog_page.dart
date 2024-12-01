@@ -103,19 +103,19 @@ class _BloggerPostsPageState extends State<BloggerPostsPage> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
-                width: isSearchActive ? double.infinity : 0,
+                width: isSearchActive ? MediaQuery.of(context).size.width - 100 : 0,
                 child: isSearchActive
                     ? TextField(
-                        controller: searchController,
-                        decoration: const InputDecoration(
-                          hintText: 'Ara...',
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                        ),
-                        autofocus: true,
-                      )
+                  controller: searchController,
+                  decoration: const InputDecoration(
+                    hintText: 'Ara...',
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                  ),
+                  autofocus: true,
+                )
                     : null,
-              ),
+              )
             ),
             IconButton(
               icon: Icon(isSearchActive ? Icons.close : Icons.search),
