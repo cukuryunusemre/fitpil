@@ -14,7 +14,8 @@ class _ActivityPageState extends State<ActivityPage> {
   double duration = 30; // Süre (dakika)
   double? caloriesBurned; // Yakılan kalori
   double? weight; // Kullanıcının girdiği kilo
-  final TextEditingController weightController = TextEditingController(); // Kilo için text controller
+  final TextEditingController weightController =
+      TextEditingController(); // Kilo için text controller
 
   // Aktivite ve MET değerleri
   final Map<String, Map<String, double>> activities = {
@@ -31,8 +32,7 @@ class _ActivityPageState extends State<ActivityPage> {
       builder: (context) => AlertDialog(
         title: Text('Bilgilendirme'),
         content: Text(
-          'Bu uygulamada verilen kalori hesaplamaları, MET (Metabolic Equivalent of Task) değerlerine dayanır ve kişisel özelliklere göre değişebilir. '
-              '\n\nHesaplamalar yaklaşık sonuçlar verir ve yaş, metabolizma hızı, sağlık durumu gibi faktörlere bağlı olarak farklılık gösterebilir.',
+          "Bu uygulamadaki kalori hesaplamaları, MET değerlerine dayanır ve kişisel faktörlere (yaş, metabolizma hızı, sağlık durumu) göre değişiklik gösterebilir. Sonuçlar yaklaşık değerlerdir.",
           style: TextStyle(fontSize: 16),
         ),
         actions: [
@@ -49,7 +49,18 @@ class _ActivityPageState extends State<ActivityPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Aktivite Kalori Hesaplama'),
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back),
+          color: Colors.white54,
+        ),
+        title: Text(
+          'Aktivite Kalori Hesaplama',
+          style: TextStyle(color: Colors.white70),
+        ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -61,11 +72,11 @@ class _ActivityPageState extends State<ActivityPage> {
           IconButton(
             icon: Icon(Icons.info_outline),
             tooltip: 'Bilgilendirme',
+            color: Colors.white54,
             onPressed: () => _showInfoDialog(context),
           ),
         ],
       ),
-
       body: Stepper(
         currentStep: currentStep,
         type: StepperType.vertical,
@@ -74,38 +85,40 @@ class _ActivityPageState extends State<ActivityPage> {
             currentStep = step;
           });
         },
-          onStepContinue: () {
-            if (currentStep < 3) {
-              if (currentStep == 0 && weight == null) {
-                SnackbarHelper.show(
-                  context,
-                  message: 'Lütfen geçerli bir kilo girin!',
-                  icon: Icons.error_outline,
-                  backgroundColor: Colors.redAccent,
-                );
-                return;
-              }
+        onStepContinue: () {
+          if (currentStep < 3) {
+            if (currentStep == 0 && weight == null) {
+              SnackbarHelper.show(
+                context,
+                message: 'Lütfen geçerli bir kilo girin!',
+                icon: Icons.error_outline,
+                backgroundColor: Colors.redAccent,
+              );
+              return;
+            }
+            setState(() {
+              currentStep++;
+            });
+          } else {
+            if (selectedActivity != null &&
+                selectedTempo != null &&
+                weight != null) {
+              double met = activities[selectedActivity!]![selectedTempo!]!;
+              double durationHours = duration / 60.0; // Süreyi saate çevir
               setState(() {
-                currentStep++;
+                caloriesBurned = met * weight! * durationHours;
               });
             } else {
-              if (selectedActivity != null && selectedTempo != null && weight != null) {
-                double met = activities[selectedActivity!]![selectedTempo!]!;
-                double durationHours = duration / 60.0; // Süreyi saate çevir
-                setState(() {
-                  caloriesBurned = met * weight! * durationHours;
-                });
-              } else {
-                SnackbarHelper.show(
-                  context,
-                  message: 'Lütfen tüm seçimleri tamamlayınız',
-                  icon: Icons.error_outline,
-                  backgroundColor: Colors.redAccent,
-                );
-              }
+              SnackbarHelper.show(
+                context,
+                message: 'Lütfen tüm seçimleri tamamlayınız',
+                icon: Icons.error_outline,
+                backgroundColor: Colors.redAccent,
+              );
             }
-          },
-          onStepCancel: () {
+          }
+        },
+        onStepCancel: () {
           if (currentStep > 0) {
             setState(() {
               currentStep--;
@@ -122,7 +135,8 @@ class _ActivityPageState extends State<ActivityPage> {
                   ElevatedButton(
                     onPressed: details.onStepCancel,
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -153,7 +167,8 @@ class _ActivityPageState extends State<ActivityPage> {
                     controller: weightController,
                     keyboardType: TextInputType.number,
                     inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly, // Sadece rakamları kabul et
+                      FilteringTextInputFormatter
+                          .digitsOnly, // Sadece rakamları kabul et
                     ],
                     decoration: InputDecoration(
                       hintText: 'Kilo (kg)',
@@ -168,7 +183,9 @@ class _ActivityPageState extends State<ActivityPage> {
                     onChanged: (value) {
                       // Sadece geçerli sayıları kontrol et
                       double? enteredWeight = double.tryParse(value);
-                      if (enteredWeight != null && enteredWeight >= 30 && enteredWeight <= 300) {
+                      if (enteredWeight != null &&
+                          enteredWeight >= 30 &&
+                          enteredWeight <= 300) {
                         setState(() {
                           weight = enteredWeight;
                         });
@@ -183,7 +200,6 @@ class _ActivityPageState extends State<ActivityPage> {
               ],
             ),
           ),
-
           Step(
             title: Text('Aktivite Seç'),
             content: Row(
@@ -202,12 +218,12 @@ class _ActivityPageState extends State<ActivityPage> {
                         activity == 'Yürüme'
                             ? Icons.directions_walk
                             : activity == 'Koşu'
-                            ? Icons.directions_run
-                            : activity == 'Ağırlık'
-                            ? Icons.fitness_center
-                            : activity == 'Yüzme'
-                            ? Icons.pool
-                            : Icons.sports_soccer,
+                                ? Icons.directions_run
+                                : activity == 'Ağırlık'
+                                    ? Icons.fitness_center
+                                    : activity == 'Yüzme'
+                                        ? Icons.pool
+                                        : Icons.sports_soccer,
                         size: 50,
                         color: selectedActivity == activity
                             ? Colors.blue
@@ -225,19 +241,19 @@ class _ActivityPageState extends State<ActivityPage> {
             content: selectedActivity == null
                 ? Text('Önce bir aktivite seçin.')
                 : Column(
-              children: activities[selectedActivity!]!.keys.map((tempo) {
-                return RadioListTile<String>(
-                  title: Text(tempo),
-                  value: tempo,
-                  groupValue: selectedTempo,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedTempo = value;
-                    });
-                  },
-                );
-              }).toList(),
-            ),
+                    children: activities[selectedActivity!]!.keys.map((tempo) {
+                      return RadioListTile<String>(
+                        title: Text(tempo),
+                        value: tempo,
+                        groupValue: selectedTempo,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedTempo = value;
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
           ),
           Step(
             title: Text('Süre ve Hesaplama'),
@@ -247,17 +263,23 @@ class _ActivityPageState extends State<ActivityPage> {
                   'Süre (dakika): ${duration.toInt()}',
                   style: TextStyle(fontSize: 16),
                 ),
-                Slider(
-                  value: duration,
-                  min: 10,
-                  max: 180,
-                  divisions: 11,
-                  label: '${duration.toInt()} dk',
-                  onChanged: (value) {
-                    setState(() {
-                      duration = value;
-                    });
-                  },
+                SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    tickMarkShape:
+                        SliderTickMarkShape.noTickMark, // Çentikleri gizler
+                  ),
+                  child: Slider(
+                    value: duration,
+                    min: 10,
+                    max: 180,
+                    divisions: 34,
+                    label: '${duration.toInt()} dk',
+                    onChanged: (value) {
+                      setState(() {
+                        duration = value;
+                      });
+                    },
+                  ),
                 ),
                 if (caloriesBurned != null)
                   Text(
@@ -272,4 +294,3 @@ class _ActivityPageState extends State<ActivityPage> {
     );
   }
 }
-

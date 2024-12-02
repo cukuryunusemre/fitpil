@@ -8,6 +8,8 @@ import '../pages/step_page.dart';
 import 'package:fitpil/utils/permission.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+// screen heighta göre responsive
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -21,17 +23,14 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
-    double screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
-    double buttonHeight = screenHeight * 0.2;
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    double buttonHeight = screenHeight * 0.245;
     double buttonWidth = screenWidth * 0.45;
 
+    if (MediaQuery.of(context).size.width < 400) {
+      buttonHeight = screenHeight * 0.225;
+    }
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: SingleChildScrollView(
@@ -113,9 +112,7 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => ActivityPage()
-                        ),
+                        MaterialPageRoute(builder: (context) => ActivityPage()),
                       );
                     },
                     child: Ink(
@@ -140,8 +137,8 @@ class _HomePageState extends State<HomePage> {
                             SizedBox(height: 10.0),
                             Text(
                               "Aktivite",
-                              style:
-                              TextStyle(color: Colors.white, fontSize: 18.0),
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 18.0),
                             ),
                           ],
                         ),
@@ -191,8 +188,8 @@ class _HomePageState extends State<HomePage> {
                             SizedBox(height: 10.0),
                             Text(
                               "Kalori",
-                              style:
-                              TextStyle(color: Colors.white, fontSize: 18.0),
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 18.0),
                             ),
                           ],
                         ),
@@ -236,8 +233,8 @@ class _HomePageState extends State<HomePage> {
                             SizedBox(height: 10.0),
                             Text(
                               "Yağ Oranı",
-                              style:
-                              TextStyle(color: Colors.white, fontSize: 18.0),
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 18.0),
                             ),
                           ],
                         ),
@@ -250,7 +247,7 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 16.0),
             SizedBox(
               width: screenWidth * 0.92,
-              height: screenHeight * 0.22,
+              height: screenHeight * 0.228,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.zero,
@@ -287,8 +284,8 @@ class _HomePageState extends State<HomePage> {
                         SizedBox(height: 16.0),
                         Text(
                           "Antrenman Rutini",
-                          style: TextStyle(color: Colors.white54,
-                              fontSize: 20.0),
+                          style:
+                              TextStyle(color: Colors.white54, fontSize: 20.0),
                         ),
                       ],
                     ),

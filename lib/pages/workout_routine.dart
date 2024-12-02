@@ -1,3 +1,4 @@
+import 'package:fitpil/pages/in_workout.dart';
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
 
@@ -26,9 +27,9 @@ class DynamicPage extends StatefulWidget {
 class _DynamicPageState extends State<DynamicPage> {
   List<Map<String, dynamic>> exercises = [];
   int exerciseCount = 1;
-  final TextEditingController _exerciseController = TextEditingController();
-  final TextEditingController _setsController = TextEditingController();
-  final TextEditingController _repsController = TextEditingController();
+  TextEditingController _exerciseController = TextEditingController();
+  TextEditingController _setsController = TextEditingController();
+  TextEditingController _repsController = TextEditingController();
 
   @override
   void initState() {
@@ -78,36 +79,35 @@ class _DynamicPageState extends State<DynamicPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Egzersizi Düzenle"),
+          title: Text("Egzersizi Düzenle"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               // Sayfa ismi girişi
               TextField(
                 controller: _exerciseController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Egzersiz İsmi",
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 16.0),
+              SizedBox(height: 16.0),
               Row(
                 children: [
                   Expanded(
                     child: TextField(
                       controller: _setsController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: "Set Sayısı",
                       ),
                       keyboardType: TextInputType.number,
                     ),
                   ),
-                  const SizedBox(width: 10.0),
+                  SizedBox(width: 10.0),
                   Expanded(
                     child: TextField(
                       controller: _repsController,
-                      decoration:
-                          const InputDecoration(labelText: "Tekrar Sayısı"),
+                      decoration: InputDecoration(labelText: "Tekrar Sayısı"),
                     ),
                   ),
                 ],
@@ -123,7 +123,7 @@ class _DynamicPageState extends State<DynamicPage> {
                   _editExercise(index);
                   Navigator.pop(context); // Dialog'u kapat
                 },
-                child: const Text(
+                child: Text(
                   "Güncelle",
                   style: TextStyle(color: Colors.white),
                 ),
@@ -136,7 +136,7 @@ class _DynamicPageState extends State<DynamicPage> {
                 onPressed: () {
                   Navigator.pop(context); // Dialog'u kapat
                 },
-                child: const Text(
+                child: Text(
                   "Vazgeç",
                   style: TextStyle(color: Colors.white),
                 ),
@@ -193,35 +193,34 @@ class _DynamicPageState extends State<DynamicPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Egzersiz Oluşturun"),
+          title: Text("Egzersiz Oluşturun"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               // Sayfa ismi girişi
               TextField(
                 controller: _exerciseController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: "Egzersiz İsmi",
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
                     child: TextField(
                       controller: _setsController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: "Set Sayısı",
                       ),
                       keyboardType: TextInputType.number,
                     ),
                   ),
-                  const SizedBox(width: 10.0),
+                  SizedBox(width: 10.0),
                   Expanded(
                     child: TextField(
                       controller: _repsController,
-                      decoration:
-                          const InputDecoration(labelText: "Tekrar Sayısı"),
+                      decoration: InputDecoration(labelText: "Tekrar Sayısı"),
                       keyboardType: TextInputType.number,
                     ),
                   ),
@@ -239,7 +238,7 @@ class _DynamicPageState extends State<DynamicPage> {
                   _addExercise();
                   Navigator.pop(context); // Dialog'u kapat
                 },
-                child: const Text(
+                child: Text(
                   "Egzersizi Kaydet",
                   style: TextStyle(color: Colors.white),
                 ),
@@ -253,7 +252,7 @@ class _DynamicPageState extends State<DynamicPage> {
                 onPressed: () {
                   Navigator.pop(context); // Dialog'u kapat
                 },
-                child: const Text(
+                child: Text(
                   "Vazgeç",
                   style: TextStyle(color: Colors.white),
                 ),
@@ -273,11 +272,11 @@ class _DynamicPageState extends State<DynamicPage> {
         automaticallyImplyLeading:
             false, // Varsayılan leading özelliğini devre dışı bırak
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Colors.green, // Başlangıç rengi
-                Colors.greenAccent, // Bitiş rengi
+                widget.iconColor, // Başlangıç rengi
+                Colors.red, // Bitiş rengi
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -293,7 +292,7 @@ class _DynamicPageState extends State<DynamicPage> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.arrow_back,
                       color: Colors.white,
                     ),
@@ -307,14 +306,14 @@ class _DynamicPageState extends State<DynamicPage> {
                     children: [
                       Text(
                         widget.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Pacifico',
                           color: Colors.white70,
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                     ],
                   ),
                 ),
@@ -323,68 +322,143 @@ class _DynamicPageState extends State<DynamicPage> {
           ),
         ),
       ),
-      body: ReorderableListView(
-        onReorder: _onReorderInRoutines,
+      body: Column(
         children: [
-          for (int index = 0; index < exercises.length; index++)
-            ListTile(
-              key: ValueKey(exercises[index]['id']),
-              leading: ReorderableDragStartListener(
-                index: index,
-                child: const Icon(
-                  Icons.drag_handle,
-                  color: Colors.orangeAccent,
+          Expanded(
+            child: ReorderableListView(
+              onReorder: _onReorderInRoutines,
+              children: [
+                for (int index = 0; index < exercises.length; index++)
+                  ListTile(
+                    key: ValueKey(exercises[index]['id']),
+                    leading: ReorderableDragStartListener(
+                      index: index,
+                      child: Icon(
+                        Icons.drag_handle,
+                        color: Colors.orangeAccent,
+                      ),
+                    ),
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          exercises[index]['title'],
+                          style: TextStyle(fontSize: 18.0),
+                        ),
+                        Text(
+                          "${exercises[index]['sets']}x${exercises[index]['reps']}",
+                          style:
+                              TextStyle(fontSize: 14.0, color: Colors.blueGrey),
+                        ),
+                      ],
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            _editExerciseDialog(index);
+                          },
+                          icon: Icon(Icons.edit,
+                              color: Colors.orangeAccent, size: 20),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            _deleteExercise(index);
+                          },
+                          icon: Icon(Icons.delete, color: Colors.red, size: 20),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Expanded(
+                flex: 2,
+                child: Container(
+                  width: 200,
+                  height: 60,
+                  margin: EdgeInsets.only(left: 25, bottom: 10, right: 0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: widget.iconColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => InWorkoutPage(
+                            title: widget.title,
+                            iconColor: widget.iconColor,
+                            pageId: widget.pageId,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Başla",
+                          style: TextStyle(color: Colors.white, fontSize: 22),
+                        ),
+                        Icon(
+                          Icons.play_arrow,
+                          color: Colors.white,
+                          size: 30,
+                        )
+                      ],
+                    ),
+                  ),
                 ),
               ),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    exercises[index]['title'],
-                    style: const TextStyle(fontSize: 18.0),
+              Expanded(
+                flex: 1,
+                child: Container(
+                  width: 60,
+                  height: 60,
+                  // padding: EdgeInsets.all(16),
+                  margin: EdgeInsets.only(bottom: 10, right: 0, left: 30),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [widget.iconColor, Colors.red],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                   ),
-                  Text(
-                    "${exercises[index]['sets']}x${exercises[index]['reps']}",
-                    style:
-                        const TextStyle(fontSize: 14.0, color: Colors.blueGrey),
+                  child: FloatingActionButton(
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    splashColor: Colors.transparent,
+                    highlightElevation: 0,
+                    hoverElevation: 0,
+                    child: Icon(
+                      widget.icon,
+                      size: 30,
+                      color: Colors.white70,
+                    ),
+                    onPressed: _createExercise,
+                    tooltip: "Yeni Rutin Ekle",
                   ),
-                ],
+                ),
               ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      print("deneme");
-                      _editExerciseDialog(index);
-                    },
-                    icon: const Icon(Icons.edit,
-                        color: Colors.orangeAccent, size: 20),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      _deleteExercise(index);
-                    },
-                    icon: const Icon(Icons.delete, color: Colors.red, size: 20),
-                  ),
-                ],
-              ),
-            ),
+            ],
+          ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.lightGreen,
-        onPressed: _createExercise,
-        tooltip: "Yeni Egzersiz ekle",
-        child: Icon(Icons.add),
       ),
     );
   }
 }
 
 class WorkoutPage extends StatefulWidget {
-  const WorkoutPage({super.key});
-
   @override
   State<WorkoutPage> createState() => _WorkoutPageState();
 }
@@ -394,7 +468,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
   int _pageCount = 1;
   IconData _selectedIcon = Icons.fitness_center;
   Color _iconColor = Colors.black;
-  final TextEditingController _pageController = TextEditingController();
+  TextEditingController _pageController = TextEditingController();
 
   @override
   void initState() {
@@ -468,7 +542,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
         context: context,
         builder: (BuildContext dialogContext) {
           return AlertDialog(
-            title: const Text("Sil"),
+            title: Text("Sil"),
             content: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -480,13 +554,13 @@ class _WorkoutPageState extends State<WorkoutPage> {
                   _deletePage(index);
                   Navigator.pop(dialogContext);
                 },
-                child: const Text("Sil"),
+                child: Text("Sil"),
               ),
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(dialogContext);
                 },
-                child: const Text("Kapat"),
+                child: Text("Kapat"),
               ),
             ],
           );
@@ -535,23 +609,23 @@ class _WorkoutPageState extends State<WorkoutPage> {
         return StatefulBuilder(builder: (context, setState) {
           return SingleChildScrollView(
             child: AlertDialog(
-              title: const Text("Rutini Düzenle"),
+              title: Text("Rutini Düzenle"),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
                     controller: _pageController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: "Rutin İsmi",
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   // İkon seçimi
                   Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.fitness_center, size: 40),
+                        icon: Icon(Icons.fitness_center, size: 40),
                         color: _selectedIcon == Icons.fitness_center
                             ? _iconColor
                             : Colors.grey,
@@ -562,7 +636,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                         },
                       ),
                       IconButton(
-                        icon: const Icon(Icons.directions_run, size: 40),
+                        icon: Icon(Icons.directions_run, size: 40),
                         color: _selectedIcon == Icons.directions_run
                             ? _iconColor
                             : Colors.grey,
@@ -573,7 +647,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                         },
                       ),
                       IconButton(
-                        icon: const Icon(Icons.self_improvement, size: 40),
+                        icon: Icon(Icons.self_improvement, size: 40),
                         color: _selectedIcon == Icons.self_improvement
                             ? _iconColor
                             : Colors.grey,
@@ -585,14 +659,14 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   // İkon rengi seçimi
                   Row(
                     children: [
                       Expanded(
                         child: IconButton(
-                          icon: const Icon(Icons.circle,
-                              color: Colors.black, size: 30),
+                          icon:
+                              Icon(Icons.circle, color: Colors.black, size: 30),
                           onPressed: () {
                             setState(() {
                               _iconColor = Colors.black;
@@ -602,7 +676,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: const Icon(Icons.circle,
+                          icon: Icon(Icons.circle,
                               color: Colors.blueAccent, size: 30),
                           onPressed: () {
                             setState(() {
@@ -613,7 +687,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: const Icon(Icons.circle,
+                          icon: Icon(Icons.circle,
                               color: Colors.redAccent, size: 30),
                           onPressed: () {
                             setState(() {
@@ -624,7 +698,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: const Icon(Icons.circle,
+                          icon: Icon(Icons.circle,
                               color: Colors.greenAccent, size: 30),
                           onPressed: () {
                             setState(() {
@@ -635,7 +709,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: const Icon(Icons.circle,
+                          icon: Icon(Icons.circle,
                               color: Colors.deepOrangeAccent, size: 30),
                           onPressed: () {
                             setState(() {
@@ -646,11 +720,11 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: const Icon(Icons.circle,
-                              color: Colors.pinkAccent, size: 30),
+                          icon:
+                              Icon(Icons.circle, color: Colors.teal, size: 30),
                           onPressed: () {
                             setState(() {
-                              _iconColor = Colors.pinkAccent;
+                              _iconColor = Colors.teal;
                             });
                           },
                         ),
@@ -668,7 +742,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                     // Dialog'u kapat
                     Navigator.pop(dialogContext);
                   },
-                  child: const Text(
+                  child: Text(
                     "Güncelle",
                     style: TextStyle(color: Colors.black, fontSize: 16.0),
                   ),
@@ -679,7 +753,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                   onPressed: () {
                     Navigator.pop(dialogContext); // İptal
                   },
-                  child: const Text(
+                  child: Text(
                     "İptal",
                     style: TextStyle(color: Colors.white, fontSize: 16.0),
                   ),
@@ -725,21 +799,21 @@ class _WorkoutPageState extends State<WorkoutPage> {
         return StatefulBuilder(builder: (context, setState) {
           return SingleChildScrollView(
             child: AlertDialog(
-              title: const Text("Rutin Oluşturun"),
+              title: Text("Rutin Oluşturun"),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Sayfa ismi girişi
                   TextField(
                     controller: _pageController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: "Rutin İsmi",
                       border: OutlineInputBorder(),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   // İkon seçimi
-                  const Text("İkon"),
+                  Text("İkon"),
                   Row(
                     children: [
                       IconButton(
@@ -781,9 +855,9 @@ class _WorkoutPageState extends State<WorkoutPage> {
                     ],
                   ),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   // İkon rengi seçimi
-                  const Text("İkon Rengi"),
+                  Text("İkon Rengi"),
                   Row(
                     children: [
                       Expanded(
@@ -793,7 +867,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                               _iconColor = Colors.black;
                             });
                           },
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.circle,
                             color: Colors.black,
                             size: 30,
@@ -802,7 +876,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.circle,
                             color: Colors.blueAccent,
                             size: 30,
@@ -816,7 +890,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.circle,
                             color: Colors.redAccent,
                             size: 30,
@@ -830,7 +904,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.circle,
                             color: Colors.greenAccent,
                             size: 30,
@@ -844,7 +918,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.circle,
                             color: Colors.deepOrangeAccent,
                             size: 30,
@@ -858,14 +932,14 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.circle,
-                            color: Colors.pinkAccent,
+                            color: Colors.teal,
                             size: 30,
                           ),
                           onPressed: () {
                             setState(() {
-                              _iconColor = Colors.pinkAccent;
+                              _iconColor = Colors.teal;
                             });
                           },
                         ),
@@ -885,7 +959,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                           _addPage();
                           Navigator.pop(context); // Dialog'u kapat
                         },
-                        child: const Center(
+                        child: Center(
                           child: Text(
                             "Kaydet",
                             style: TextStyle(color: Colors.white),
@@ -893,7 +967,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(
+                    SizedBox(
                       width: 16,
                     ),
                     Expanded(
@@ -903,7 +977,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        child: const Text(
+                        child: Text(
                           "Vazgeç",
                           style: TextStyle(color: Colors.white),
                         ),
@@ -919,137 +993,189 @@ class _WorkoutPageState extends State<WorkoutPage> {
     );
   }
 
-  // Widget _buildIconButton({
-  //   required IconData icon,
-  //   required int index,
-  //   required int selectedIndex,
-  //   required VoidCallback onPressed,
-  // }) {
-  //   final isSelected = index == selectedIndex;
-  //
-  //   return IconButton(
-  //     icon: Icon(
-  //       icon,
-  //       size: 40,
-  //       color: isSelected ? Colors.lightGreen : Colors.grey,
-  //     ),
-  //     onPressed: onPressed,
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        automaticallyImplyLeading:
-            false, // Varsayılan leading özelliğini devre dışı bırak
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Colors.green, // Başlangıç rengi
-                Colors.greenAccent, // Bitiş rengi
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          bottom: const TabBar(
+            splashFactory: NoSplash.splashFactory,
+            labelStyle: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white70),
+            unselectedLabelStyle:
+                TextStyle(fontSize: 14, color: Colors.white54),
+            indicatorColor: Colors.white,
+            indicatorWeight: 4.0,
+            tabs: [
+              Tab(
+                text: "Rutinlerim",
+              ),
+              Tab(
+                text: "Geçmiş",
+              ),
+            ],
           ),
-          child: SafeArea(
-            child: Stack(
-              children: [
-                // Geri Dön Butonu
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
+          automaticallyImplyLeading:
+              false, // Varsayılan leading özelliğini devre dışı bırak
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.black, // Başlangıç rengi
+                  Colors.red, // Bitiş rengi
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: SafeArea(
+              child: Stack(
+                children: [
+                  // Geri Dön Butonu
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-                // Başlık ve İkon
-                const Align(
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.fitness_center,
-                        color: Colors.white,
-                        size: 50,
-                      ),
-                      SizedBox(width: 8),
-                    ],
+                  // Başlık ve İkon
+                  Align(
+                    alignment: Alignment.center,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.fitness_center,
+                          color: Colors.white,
+                          size: 50,
+                        ),
+                        SizedBox(width: 8),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
-      ),
-      body: ListView.builder(
-        itemCount: pages.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            leading: Icon(
-              pages[index]['icon'],
-              color: pages[index]['iconColor'],
-              size: 40,
-            ),
-            title: Text(
-              pages[index]['title'],
-              style: const TextStyle(fontSize: 18),
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
+        body: TabBarView(
+          children: [
+            Column(
               children: [
-                IconButton(
-                  onPressed: () {
-                    _editPage(index);
-                  },
-                  icon: Icon(
-                    Icons.edit,
-                    color: pages[index]['iconColor'],
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: pages.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading: Icon(
+                          pages[index]['icon'],
+                          color: pages[index]['iconColor'],
+                          size: 40,
+                        ),
+                        title: Text(
+                          pages[index]['title'],
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                _editPage(index);
+                              },
+                              icon: Icon(
+                                Icons.edit,
+                                color: pages[index]['iconColor'],
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                _deletePageDialog(index);
+                                // Navigator.pop(context);
+                              },
+                              icon: Icon(
+                                Icons.delete,
+                                color: pages[index]['iconColor'],
+                              ),
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DynamicPage(
+                                pageId: pages[index]['id'],
+                                title: pages[index]['title'],
+                                icon: pages[index]['icon'],
+                                iconColor: pages[index]['iconColor'],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
                   ),
                 ),
-                IconButton(
-                  onPressed: () {
-                    _deletePageDialog(index);
-                    // Navigator.pop(context);
-                  },
-                  icon: Icon(
-                    Icons.delete,
-                    color: pages[index]['iconColor'],
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      width: 70,
+                      height: 70,
+                      // padding: EdgeInsets.all(16),
+                      margin: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [Colors.black, Colors.red],
+                          begin: Alignment.bottomLeft,
+                          end: Alignment.topRight,
+                        ),
+                      ),
+                      child: FloatingActionButton(
+                        backgroundColor: Colors.transparent,
+                        elevation: 0,
+                        splashColor: Colors.transparent,
+                        highlightElevation: 0,
+                        hoverElevation: 0,
+                        child: Icon(
+                          Icons.add,
+                          color: Colors.white70,
+                        ),
+                        onPressed: _showDialog,
+                        tooltip: "Yeni Rutin Ekle",
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DynamicPage(
-                    pageId: pages[index]['id'],
-                    title: pages[index]['title'],
-                    icon: pages[index]['icon'],
-                    iconColor: pages[index]['iconColor'],
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(30.0),
+                  child: Text(
+                    "Geçmiş Antrenmanlarını görebilmen için antrenman yapmaya başlaman lazım :p",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
-              );
-            },
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.lightGreen,
-        onPressed: _showDialog,
-        tooltip: "Yeni Sayfa ekle",
-        child: Icon(Icons.add),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

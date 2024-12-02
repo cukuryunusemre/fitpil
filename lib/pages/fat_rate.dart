@@ -155,7 +155,9 @@ void showFatRatePage(BuildContext context) {
                           TextField(
                             controller: _heightController,
                             keyboardType: TextInputType.number,
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly,],
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                             decoration:
                                 const InputDecoration(labelText: "Boy (cm)"),
                             onChanged: (value) {
@@ -168,7 +170,9 @@ void showFatRatePage(BuildContext context) {
                           TextField(
                             controller: _neckController,
                             keyboardType: TextInputType.number,
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly,],
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                             decoration: const InputDecoration(
                                 labelText: "Boyun Çevresi"),
                             onChanged: (value) {
@@ -181,7 +185,9 @@ void showFatRatePage(BuildContext context) {
                           TextField(
                             controller: _waistController,
                             keyboardType: TextInputType.number,
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly,],
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                             decoration:
                                 const InputDecoration(labelText: "Bel Çevresi"),
                             onChanged: (value) {
@@ -195,7 +201,9 @@ void showFatRatePage(BuildContext context) {
                             TextField(
                               controller: _hipController,
                               keyboardType: TextInputType.number,
-                              inputFormatters: [FilteringTextInputFormatter.digitsOnly,],
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
                               decoration: const InputDecoration(
                                   labelText: "Kalça Çevresi"),
                               onChanged: (value) {

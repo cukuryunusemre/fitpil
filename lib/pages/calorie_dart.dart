@@ -99,7 +99,10 @@ void showCaloriePage(BuildContext context) {
                     TextField(
                       controller: fat_percentageController,
                       keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}$')),], //ondalıklı sayı izni
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d*\.?\d{0,2}$')),
+                      ], //ondalıklı sayı izni
                       decoration: const InputDecoration(labelText: "Yağ Oranı"),
                       onChanged: (_) =>
                           _calculateCalori(setState), // Hemen kontrol et
@@ -115,7 +118,9 @@ void showCaloriePage(BuildContext context) {
                     TextField(
                       controller: body_weightController,
                       keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly,],
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
                       decoration:
                           const InputDecoration(labelText: "Vücut Ağırlığı"),
                       onChanged: (_) =>

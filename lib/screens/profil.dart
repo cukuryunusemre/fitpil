@@ -116,7 +116,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       icon: Icons.camera_alt_outlined,
                       backgroundColor: Colors.redAccent,
                     );
-
                   }
                 },
               ),
