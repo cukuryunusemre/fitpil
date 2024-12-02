@@ -2,18 +2,9 @@ import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-// Future<void> resetTable(Database db, String tableName) async {
-//   await db.execute('DROP TABLE IF EXISTS $tableName;');
-//   await db.execute('''
-//     CREATE TABLE $tableName (
-//       id INTEGER PRIMARY KEY AUTOINCREMENT,
-//       pageId INTEGER DEFAULT 1,
-//       title TEXT,
-//       createdAt TEXT
-//     )
-//   ''');
-//   print('$tableName tablosu sıfırlandı ve yeniden oluşturuldu.');
-// }
+Future<void> resetTable(Database db, String tableName) async {
+  await db.execute('DROP TABLE IF EXISTS $tableName;');
+}
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
@@ -42,7 +33,8 @@ class DatabaseHelper {
         reps TEXT,
         weight TEXT,
         date TEXT,
-        rName TEXT
+        rName TEXT,
+        historyId INTEGER
       )
     ''');
       print('$tableName tablosu yeniden oluşturuldu.');
@@ -81,7 +73,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 14,
+      version: 15,
       onCreate: _createDB, // Veritabanı oluşturma işlemi buraya yönlendirilir
       // onOpen: (db) async {
       //   await db.execute(
@@ -144,12 +136,14 @@ class DatabaseHelper {
         reps TEXT,
         weight TEXT,
         date TEXT,
-        rName TEXT
+        rName TEXT,
+        historyId INTEGER
       )
     ''');
     await db.execute('''
   CREATE TABLE historyWorkoutPages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pageId INTEGER NOT NULL,
   title TEXT NOT NULL,
   createdAt TEXT NOT NULL
   )
@@ -179,18 +173,22 @@ class DatabaseHelper {
           weight TEXT NOT NULL,
           date TEXT NOT NULL,
           rName TEXT NOT NULL,
-          FOREIGN KEY (pageId) REFERENCES historyWorkoutPages (id) ON DELETE CASCADE
+          historyWorkout INTEGER NOT NULL,
+          FOREIGN KEY (pageId) REFERENCES historyWorkoutPages (id) ON DELETE CASCADE,
+          FOREIGN KEY (historyId) REFERENCES historyWorkoutPages (id) ON DELETE CASCADE
         )
       ''');
     }
   }
 
-  Future<void> insertDynamicPage(String title) async {
+  Future<int> insertDynamicPage(String title, int pageId) async {
     final db = await DatabaseHelper.instance.database;
-    await db.insert(
+    return await db.insert(
+      // Burada `return` ekliyoruz
       'historyWorkoutPages',
       {
         'title': title,
+        'pageId': pageId,
         'createdAt': DateTime.now().toIso8601String(),
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -222,6 +220,39 @@ class DatabaseHelper {
       where: 'pageId = ?',
       whereArgs: [pageId],
     ); // Belirli pageId'ye ait kayıtları alır
+  }
+
+  Future<Map<String, dynamic>?> getHistoryWorkoutPageById(int historyId) async {
+    final db = await database;
+    final result = await db.query(
+      'historyWorkoutPages',
+      where: 'id = ?', // Yalnızca verilen `id`'yi filtreliyoruz
+      whereArgs: [historyId],
+    );
+
+    if (result.isNotEmpty) {
+      return result.first; // İlk ve tek satırı döndürür
+    }
+
+    return null; // Eğer sonuç yoksa null döner
+  }
+
+  Future<int?> getPageIdByHistoryId(int historyId) async {
+    final historyWorkoutPage = await getHistoryWorkoutPageById(historyId);
+    if (historyWorkoutPage != null) {
+      return historyWorkoutPage['pageId'] as int?; // `pageId`'yi döndürüyoruz
+    }
+    return null; // Eğer satır bulunamazsa null döndürüyoruz
+  }
+
+  Future<List<Map<String, dynamic>>> getWorkoutsByHistoryId(
+      int historyId) async {
+    final db = await database;
+    return await db.query(
+      'workouts',
+      where: 'historyId = ?', // historyId sütunu üzerinden filtreleme
+      whereArgs: [historyId],
+    );
   }
 
   Future<int> insertPage(Map<String, dynamic> page) async {
@@ -312,7 +343,7 @@ class DatabaseHelper {
   }
 
   Future<int> insertWorkout(int pageId, String title, int setCount, String reps,
-      String weight, String date, String rName) async {
+      String weight, String date, String rName, int historyId) async {
     final db = await database;
     return await db.insert('workouts', {
       'pageId': pageId,
@@ -322,6 +353,7 @@ class DatabaseHelper {
       'weight': weight,
       'date': date,
       'rName': rName,
+      'historyId': historyId,
     });
   }
 }

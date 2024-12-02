@@ -32,7 +32,9 @@ class _ActivityPageState extends State<ActivityPage> {
       builder: (context) => AlertDialog(
         title: Text('Bilgilendirme'),
         content: Text(
-          "Bu uygulamadaki kalori hesaplamaları, MET değerlerine dayanır ve kişisel faktörlere (yaş, metabolizma hızı, sağlık durumu) göre değişiklik gösterebilir. Sonuçlar yaklaşık değerlerdir.",
+          "Bu uygulamadaki kalori hesaplamaları, MET değerlerine dayanır ve "
+          "kişisel faktörlere (yaş, metabolizma hızı, sağlık durumu) "
+          "göre değişiklik gösterebilir. Sonuçlar yaklaşık değerlerdir.",
           style: TextStyle(fontSize: 16),
         ),
         actions: [

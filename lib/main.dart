@@ -7,9 +7,35 @@ import 'pages/menu.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'pages/database_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+//   final db = await DatabaseHelper.instance.database;
+//   await resetTable(db, 'historyWorkoutPages');
+//   await resetTable(db, 'workouts');
+//   await db.execute('''
+//   CREATE TABLE historyWorkoutPages (
+//     id INTEGER PRIMARY KEY AUTOINCREMENT,
+//     title TEXT,
+//     pageId INTEGER,
+//     createdAt TEXT
+//   )
+// ''');
+//   await db.execute('''
+//       CREATE TABLE workouts (
+//         id INTEGER PRIMARY KEY AUTOINCREMENT,
+//         pageId INTEGER,
+//         title TEXT,
+//         set_count INTEGER,
+//         reps TEXT,
+//         weight TEXT,
+//         date TEXT,
+//         rName TEXT,
+//         historyId INTEGER
+//       )
+//     ''');
+
   await dotenv.load();
 
   await SystemChrome.setPreferredOrientations([

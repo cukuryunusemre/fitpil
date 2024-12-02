@@ -114,6 +114,8 @@ class _InWorkoutPageState extends State<InWorkoutPage> {
     String formattedDate = "${now.day}-${now.month}-${now.year}";
     String routinName = widget.title;
 
+    final historyId = await DatabaseHelper.instance
+        .insertDynamicPage(routinName, widget.pageId);
     for (var exercise in exercises) {
       final exerciseId = exercise['id'];
       final exerciseName = exercise['title'];
@@ -134,13 +136,14 @@ class _InWorkoutPageState extends State<InWorkoutPage> {
             weight,
             formattedDate,
             routinName,
+            historyId,
           );
         }
       }
     }
     print("Workout saved to database.");
     // setState(() async {});
-    await DatabaseHelper.instance.insertDynamicPage(routinName);
+    // await DatabaseHelper.instance.insertDynamicPage(routinName, widget.pageId);
     Navigator.pop(context);
   }
 

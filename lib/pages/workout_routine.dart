@@ -1,6 +1,7 @@
 import 'package:fitpil/pages/in_workout.dart';
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -1132,8 +1133,8 @@ class _WorkoutPageState extends State<WorkoutPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Container(
-                      width: 70,
-                      height: 70,
+                      width: 60,
+                      height: 60,
                       // padding: EdgeInsets.all(16),
                       margin: EdgeInsets.all(10),
                       decoration: BoxDecoration(
@@ -1165,17 +1166,103 @@ class _WorkoutPageState extends State<WorkoutPage> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Padding(
-                  padding: EdgeInsets.all(30.0),
-                  child: Text(
-                    "Geçmiş Antrenmanlarını görebilmen için antrenman yapmaya başlaman lazım :p",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
+                FutureBuilder<List<Map<String, dynamic>>>(
+                  future: DatabaseHelper.instance.fetchDynamicPages(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(
+                          child: Text('Bir hata oluştu: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text('Henüz geçmiş bulunmuyor.'));
+                    } else {
+                      final historyList = snapshot.data!;
+                      return Expanded(
+                        child: ListView.builder(
+                          itemCount: historyList.length,
+                          itemBuilder: (context, index) {
+                            final workout = historyList[index];
+                            return ListTile(
+                              title:
+                                  Text(workout['title'] ?? 'Bilinmeyen Başlık'),
+                              subtitle: Text(
+                                workout['createdAt'] != null
+                                    ? DateFormat('dd MMM yyyy').format(
+                                        DateTime.parse(workout['createdAt']),
+                                      )
+                                    : 'Tarih Yok',
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DetailHistoryPage(
+                                      historyId: workout['id'],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      );
+                    }
+                  },
                 ),
               ],
             )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class DetailHistoryPage extends StatelessWidget {
+  final int historyId; // historyWorkoutPages tablosundaki id
+
+  const DetailHistoryPage({Key? key, required this.historyId})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Detay Sayfası'),
+      ),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: DatabaseHelper.instance
+            .getWorkoutsByHistoryId(historyId), // Filtreleme fonksiyonu
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Bir hata oluştu: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('Bu sayfa için veri bulunamadı.'));
+          } else {
+            final workouts = snapshot.data!;
+            return ListView.builder(
+              itemCount: workouts.length,
+              itemBuilder: (context, index) {
+                final workout = workouts[index];
+                return ListTile(
+                  title: Text(workout['title'] ?? 'Hareket İsmi Yok'),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                          'Set Sayısı: ${workout['set_count'] ?? 'Bilinmiyor'}'),
+                      Text('Tekrar: ${workout['reps'] ?? 'Bilinmiyor'}'),
+                      Text('Ağırlık: ${workout['weight'] ?? 'Bilinmiyor'}'),
+                    ],
+                  ),
+                );
+              },
+            );
+          }
+        },
       ),
     );
   }
