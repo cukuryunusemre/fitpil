@@ -234,11 +234,16 @@ void showFatRatePage(BuildContext context) {
       });
 }
 
+double cmToInches(double cm) => cm / 2.54;
 void _calculateFatRate(StateSetter setState) {
   double height = double.tryParse(_heightController.text) ?? 0;
   double neck = double.tryParse(_neckController.text) ?? 0;
   double waist = double.tryParse(_waistController.text) ?? 0;
   double hip = double.tryParse(_hipController.text) ?? 0;
+  double waistIn = cmToInches(waist);
+  double hipIn = cmToInches(hip);
+  double neckIn = cmToInches(neck);
+  double heightIn = cmToInches(height);
   double bodyFat;
 
   setState(() {
@@ -269,11 +274,9 @@ void _calculateFatRate(StateSetter setState) {
         _resultController.text = "${bodyFat.toStringAsFixed(1)}%";
       }
     } else if (_selectedOption == "Kadın" && _hipController.text.isNotEmpty) {
-      bodyFat = 495 /
-              (1.29579 -
-                  0.35004 * log(height + hip - neck) / ln10 +
-                  0.22100 * log(height) / ln10) -
-          450;
+      bodyFat = 163.205 * log(waistIn + hipIn - neckIn) / ln10 -
+          97.684 * log(heightIn) / ln10 -
+          78.387;
       if (bodyFat < 0) {
         _resultController.text = "Lütfen Geçerli Değerler Giriniz";
       } else {
