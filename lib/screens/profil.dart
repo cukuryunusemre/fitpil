@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fitpil/utils/permission.dart';
 import 'package:fitpil/utils/snackbar_helper.dart';
+import 'package:fitpil/pages/fat_rate.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -32,9 +33,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
   File? _profileImage;
 
-  final String fatPercentage = "Bilgi Yok"; // Yağ oranı değeri
-  final String BMI = "Bilgi Yok"; // BMI değeri
-  final String Kcal = "Bilgi Yok"; // Günlük Kalori değeri
+  String fatPercentage = "Bilgi Yok"; // Yağ oranı değeri
+  final String BMI = " "; // BMI değeri
+  String Kcal = "Bilgi Yok"; // Günlük Kalori değeri
 
   bool isEditMode = false; // Düzenleme modu
 
@@ -48,10 +49,13 @@ class _ProfilePageState extends State<ProfilePage> {
     final prefs = await SharedPreferences.getInstance();
 
     setState(() {
+
       nameController.text = prefs.getString('name') ?? '';
       ageController.text = prefs.getString('age') ?? '';
       heightController.text = prefs.getString('height') ?? '';
       weightController.text = prefs.getString('weight') ?? '';
+      Kcal = prefs.getString('Kcal') ?? 'Bilgi Yok';
+      fatPercentage = prefs.getString('fatPercentage') ?? 'Bilgi Yok';
 
       String? imagePath = prefs.getString('profile_image');
       if (imagePath != null && imagePath.isNotEmpty) {
@@ -297,8 +301,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       heightController),
                   _buildInfoTile('Kilo (kg)', weightController.text,
                       'Kilo (kg)', weightController),
-                  _buildReadOnlyTile('Yağ Oranı', fatPercentage),
-                  _buildReadOnlyTile('BMI', BMI),
+                  _buildReadOnlyTile('Yağ Oranı', fatPercentage,color: _getFatPercentageColor(fatPercentage)),
+                  _buildReadOnlyTile('BMI', _calculateBMI(), color: _getBMIColor()),
                   _buildReadOnlyTile('Günlük Kalori', Kcal),
                 ],
               ),
@@ -322,14 +326,15 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildInfoTile(String title, String value, String label,
       TextEditingController controller) {
     return Card(
+      color: Colors.greenAccent,
       margin: const EdgeInsets.all(4.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.w600,color: Colors.white)),
           const SizedBox(height: 8),
           Text(value.isEmpty ? 'Bilgi Yok' : value,
-              style: TextStyle(color: Colors.grey[600])),
+              style: TextStyle(color: Colors.white)),
           if (isEditMode)
             IconButton(
               icon: const Icon(Icons.edit, color: Colors.blue),
@@ -340,17 +345,86 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildReadOnlyTile(String title, String value) {
+  Widget _buildReadOnlyTile(String title, String value,{Color? color}) {
     return Card(
+      color: color ?? Colors.blueAccent[200],
       margin: const EdgeInsets.all(4.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.w600,color: Colors.white)),
           const SizedBox(height: 8),
-          Text(value, style: TextStyle(color: Colors.grey[600])),
+          Text(value, style: TextStyle(color: Colors.white)),
         ],
       ),
     );
   }
+  String _calculateBMI() {
+    if (heightController.text.isNotEmpty && weightController.text.isNotEmpty) {
+      final double heightInMeters = double.parse(heightController.text) / 100;
+      final double weight = double.parse(weightController.text);
+
+      if (heightInMeters > 0 && weight > 0) {
+        final double bmi = weight / (heightInMeters * heightInMeters);
+
+        if (bmi < 18.5) {
+          return 'Zayıf (${bmi.toStringAsFixed(1)})';
+        } else if (bmi >= 18.5 && bmi < 25) {
+          return 'Normal (${bmi.toStringAsFixed(1)})';
+        } else if (bmi >= 25 && bmi < 30) {
+          return 'Kilolu (${bmi.toStringAsFixed(1)})';
+        } else if (bmi >=30 && bmi <40){
+          return 'Obez (${bmi.toStringAsFixed(1)})';
+        }else{
+          return  'Morbid Obez(${bmi.toStringAsFixed(1)})';
+    }
+      }
+    }
+    return 'Bilgi Yok';
+  }
+
+  Color _getBMIColor() {
+    if (heightController.text.isNotEmpty && weightController.text.isNotEmpty) {
+      final double heightInMeters = double.parse(heightController.text) / 100;
+      final double weight = double.parse(weightController.text);
+
+      if (heightInMeters > 0 && weight > 0) {
+        final double bmi = weight / (heightInMeters * heightInMeters);
+
+        if (bmi < 18.5) {
+          return Colors.redAccent; // Zayıf
+        } else if (bmi >= 18.5 && bmi < 25) {
+          return Colors.green; // Normal
+        } else if (bmi >= 25 && bmi < 30) {
+          return Colors.orange; // Kilolu
+        } else if (bmi >= 30 && bmi < 40) {
+          return Colors.red; // obez
+        } else {
+          return Color.fromARGB(255, 128, 0, 0); // Morbidobez
+        }
+      }
+    }
+    return Colors.blueAccent; // Bilgi Yok
+  }
+
+  Color _getFatPercentageColor(String fatPercentage) {
+    // Ensure the value is numeric, otherwise return a default color.
+    double fat = double.tryParse(fatPercentage.replaceAll('%', '')) ?? 0;
+
+    if (fat <= 7 && fat > 0) {
+      return Colors.red;
+    }else if(fat > 7 && fat <= 15){
+      return Colors.green;
+    } else if (fat > 15 && fat <= 20) {
+      return Colors.orange;
+    }else if (fat > 20 && fat <= 25) {
+      return Colors.red;
+    } else if (fat > 25) {
+      return Color.fromARGB(255, 128, 0, 0);
+    }
+
+    return Colors.blueAccent;
+  }
+
 }
+

@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 
 class SnackbarHelper {
+  static bool _isSnackbarActive = false;
+
   static void show(
-    BuildContext context, {
-    required String message,
-    IconData icon = Icons.info_outline, // Varsayılan ikon
-    Color backgroundColor = Colors.blueAccent, // Varsayılan arka plan rengi
-    Duration duration = const Duration(seconds: 3), // Varsayılan süre
-  }) {
+      BuildContext context, {
+        required String message,
+        IconData icon = Icons.info_outline,
+        Color backgroundColor = Colors.blueAccent,
+        Duration duration = const Duration(seconds: 3),
+      }) {
+
+    if (_isSnackbarActive) return;
+
+    _isSnackbarActive = true; // Snackbar aktif hale getirilir
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -18,7 +25,7 @@ class SnackbarHelper {
               child: Text(
                 message,
                 style:
-                    TextStyle(color: Colors.white, fontSize: 16), // Metin stili
+                TextStyle(color: Colors.white, fontSize: 16), // Metin stili
               ),
             ),
           ],
@@ -31,10 +38,15 @@ class SnackbarHelper {
         ),
         duration: duration, // Görünme süresi
       ),
-    );
+    ).closed.then((_) {
+      // Snackbar kapandıktan sonra bayrağı sıfırla
+      _isSnackbarActive = false;
+    });
   }
 }
 
+
+//örnek kullanım
 // SnackbarHelper.show(
 // context,
 // message: 'Kamera izni gerekli!',

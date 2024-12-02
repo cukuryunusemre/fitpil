@@ -7,35 +7,10 @@ import 'pages/menu.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'pages/database_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-//   final db = await DatabaseHelper.instance.database;
-//   await resetTable(db, 'historyWorkoutPages');
-//   await resetTable(db, 'workouts');
-//   await db.execute('''
-//   CREATE TABLE historyWorkoutPages (
-//     id INTEGER PRIMARY KEY AUTOINCREMENT,
-//     title TEXT,
-//     pageId INTEGER,
-//     createdAt TEXT
-//   )
-// ''');
-//   await db.execute('''
-//       CREATE TABLE workouts (
-//         id INTEGER PRIMARY KEY AUTOINCREMENT,
-//         pageId INTEGER,
-//         title TEXT,
-//         set_count INTEGER,
-//         reps TEXT,
-//         weight TEXT,
-//         date TEXT,
-//         rName TEXT,
-//         historyId INTEGER
-//       )
-//     ''');
-
   await dotenv.load();
 
   await SystemChrome.setPreferredOrientations([
@@ -204,31 +179,6 @@ class _MainMenuState extends State<MainMenu> {
             ),
           ),
         ),
-        // title: Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     Text(
-        //       'Fit Pill',
-        //       style: TextStyle(
-        //         fontSize: 30,
-        //         fontWeight: FontWeight.bold,
-        //         fontFamily: 'Pacifico',
-        //         color: Colors.white70,
-        //       ),
-        //     ),
-        //   ],
-        // ),
-        // centerTitle: true,
-        // flexibleSpace: Container(
-        //   decoration: BoxDecoration(
-        //     gradient: LinearGradient(
-        //       colors: [
-        //         Colors.green,
-        //         Colors.greenAccent,
-        //       ],
-        //     ),
-        //   ),
-        // ),
         actions: [
           IconButton(
             icon: const Icon(Icons.menu),
@@ -267,3 +217,76 @@ class _MainMenuState extends State<MainMenu> {
     );
   }
 }
+class SetupScreen extends StatelessWidget {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController ageController = TextEditingController();
+  final TextEditingController heightController = TextEditingController();
+  final TextEditingController weightController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Profil Bilgileri'),
+        backgroundColor: Colors.green,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(labelText: 'İsim Soyisim'),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: ageController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'Yaş'),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: heightController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'Boy (cm)'),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: weightController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'Kilo (kg)'),
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              onPressed: () async {
+                final prefs = await SharedPreferences.getInstance();
+                prefs.setString('name', nameController.text);
+                prefs.setString('age', ageController.text);
+                prefs.setString('height', heightController.text);
+                prefs.setString('weight', weightController.text);
+                prefs.setBool('isFirstLaunch', false);
+
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => MainMenu()),
+                );
+              },
+              child: const Text('Kaydet ve Devam Et'),
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => MainMenu()),
+                );
+              },
+              child: const Text('Atla ve Devam Et'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
