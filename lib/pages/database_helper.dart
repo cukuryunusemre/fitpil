@@ -137,7 +137,8 @@ class DatabaseHelper {
         weight TEXT,
         date TEXT,
         rName TEXT,
-        historyId INTEGER
+        historyId INTEGER,
+        FOREIGN KEY (historyId) REFERENCES historyWorkoutPages (id) ON DELETE CASCADE
       )
     ''');
     await db.execute('''
@@ -195,12 +196,12 @@ class DatabaseHelper {
     );
   }
 
-  Future<int> deleteDynamicPage(int id) async {
-    final db = await DatabaseHelper.instance.database;
-    return await db.delete(
-      'historyWorkoutPages', // Silinecek tablo
-      where: 'id = ?', // Hangi kaydı sileceğiniz
-      whereArgs: [id], // Silinecek sayfanın ID'si
+  Future<void> deleteHistoryWorkoutPage(int historyId) async {
+    final db = await database;
+    await db.delete(
+      'historyWorkoutPages',
+      where: 'id = ?',
+      whereArgs: [historyId],
     );
   }
 
@@ -253,6 +254,26 @@ class DatabaseHelper {
       where: 'historyId = ?', // historyId sütunu üzerinden filtreleme
       whereArgs: [historyId],
     );
+  }
+
+  Future<void> deleteHistoryWorkoutWithWorkouts(int historyId) async {
+    final db = await database;
+
+    // Önce workouts tablosundaki ilişkili verileri sil
+    await db.delete(
+      'workouts',
+      where: 'historyId = ?',
+      whereArgs: [historyId],
+    );
+
+    // Ardından historyWorkoutPages tablosundaki veriyi sil
+    await db.delete(
+      'historyWorkoutPages',
+      where: 'id = ?',
+      whereArgs: [historyId],
+    );
+
+    print('History id: $historyId ve ilişkili workouts silindi.');
   }
 
   Future<int> insertPage(Map<String, dynamic> page) async {

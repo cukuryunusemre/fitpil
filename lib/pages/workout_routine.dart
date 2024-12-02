@@ -1193,6 +1193,41 @@ class _WorkoutPageState extends State<WorkoutPage> {
                                       )
                                     : 'Tarih Yok',
                               ),
+                              trailing: IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: Text('Silme Onayı'),
+                                        content: Text(
+                                            'Bu geçmişi ve ilgili tüm verileri silmek istediğinize emin misiniz?'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text('Vazgeç'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              await DatabaseHelper.instance
+                                                  .deleteHistoryWorkoutWithWorkouts(
+                                                      workout[
+                                                          'id']); // Silme işlemi
+                                              Navigator.pop(
+                                                  context); // Diyalog kapat
+                                              (context as Element)
+                                                  .reassemble(); // Arayüzü yenile
+                                            },
+                                            child: Text('Sil'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                icon: Icon(Icons.delete),
+                              ),
                               onTap: () {
                                 Navigator.push(
                                   context,

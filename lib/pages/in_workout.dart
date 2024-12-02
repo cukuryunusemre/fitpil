@@ -144,6 +144,7 @@ class _InWorkoutPageState extends State<InWorkoutPage> {
     print("Workout saved to database.");
     // setState(() async {});
     // await DatabaseHelper.instance.insertDynamicPage(routinName, widget.pageId);
+    setState(() {});
     Navigator.pop(context);
   }
 
