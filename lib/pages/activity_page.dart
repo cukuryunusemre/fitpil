@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:fitpil/utils/snackbar_helper.dart';
 
 class ActivityPage extends StatefulWidget {
+  const ActivityPage({super.key});
+
   @override
   _ActivityPageState createState() => _ActivityPageState();
 }

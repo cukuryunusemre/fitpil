@@ -239,7 +239,6 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -248,24 +247,67 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           children: [
             GestureDetector(
-              onTap: _showImageSourceSheet,
-              child: CircleAvatar(
-                radius: 60,
-                backgroundImage: _profileImage != null
-                    ? FileImage(_profileImage!)
-                    : const AssetImage('images/user_icon.png') as ImageProvider,
-                child: const Align(
-                  alignment: Alignment.bottomRight,
-                  child: CircleAvatar(
-                    backgroundColor: Colors.blue,
-                    radius: 18,
-                    child: Icon(
-                      Icons.camera_alt,
-                      color: Colors.white,
-                      size: 18,
+              onTap: () {
+                if (_profileImage != null) {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    barrierColor: Colors.black.withOpacity(0.8),
+                    builder: (BuildContext context) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Center(
+                          child: Hero(
+                            tag: 'profile_photo',
+                            child: Material(
+                              color: Colors.transparent,
+                              child: ClipOval(
+                                child: Image.file(
+                                  _profileImage!,
+                                  width: 300,
+                                  height: 300,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+              },
+              child: Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  Hero(
+                    tag: 'profile_photo',
+                    child: CircleAvatar(
+                      radius: 60,
+                      backgroundImage: _profileImage != null
+                          ? FileImage(_profileImage!)
+                          : const AssetImage('images/user_icon.png') as ImageProvider,
                     ),
                   ),
-                ),
+                  Positioned(
+                    bottom: 5,
+                    right: 5,
+                    child: CircleAvatar(
+                      backgroundColor: Colors.blue,
+                      radius: 18,
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.camera_alt,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                        onPressed: _showImageSourceSheet,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 10),
