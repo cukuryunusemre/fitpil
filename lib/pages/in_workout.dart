@@ -3,6 +3,8 @@ import 'package:fitpil/pages/workout_routine.dart';
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
 import 'package:intl/intl.dart';
+import '../utils/showDialog_helper.dart';
+import '../utils/snackbar_helper.dart';
 
 class InWorkoutPage extends StatefulWidget {
   final String title;
@@ -150,194 +152,236 @@ class _InWorkoutPageState extends State<InWorkoutPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading:
-            false, // Varsayılan leading özelliğini devre dışı bırak
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                widget.iconColor, // Başlangıç rengi
-                Colors.red, // Bitiş rengi
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    return WillPopScope(
+      onWillPop: () async {
+        final shouldPop = await showExitConfirmationDialog(context);
+        return shouldPop ?? false; // Eğer null dönerse çıkışı engelle
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading:
+              false, // Varsayılan leading özelliğini devre dışı bırak
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  widget.iconColor, // Başlangıç rengi
+                  Colors.red, // Bitiş rengi
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
-          ),
-          child: SafeArea(
-            child: Stack(
-              children: [
-                // Geri Dön Butonu
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(
-                      Icons.close,
-                      color: Colors.white70,
-                      size: 25,
+            child: SafeArea(
+              child: Stack(
+                children: [
+                  // Başlık ve İkon
+                  Align(
+                    alignment: Alignment.center,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          widget.title,
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Pacifico',
+                            color: Colors.white70,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                      ],
                     ),
                   ),
-                ),
-                // Başlık ve İkon
-                Align(
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        widget.title,
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Pacifico',
-                          color: Colors.white70,
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: exercises.length,
-              itemBuilder: (context, index) {
-                final exercise = exercises[index];
-                final exerciseId = exercise['id'];
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Card(
-                    elevation: 4,
-                    child: Theme(
-                      data: Theme.of(context).copyWith(
-                          dividerColor: Colors.transparent,
-                          splashColor: Colors.transparent),
-                      child: ExpansionTile(
-                        key: Key(index.toString()),
-                        title: Text(
-                          exercise['title'],
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        subtitle: Text(
-                          "${exercise['sets']} sets x ${exercise['reps']} reps",
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                        initiallyExpanded: index == expandedIndex,
-                        onExpansionChanged: (isExpanded) {
-                          if (isExpanded) {
-                            setState(() {
-                              expandedIndex = index;
-                            });
-                          } else {
-                            setState(() {
-                              expandedIndex = -1;
-                            });
-                          }
-                        },
-                        children: List.generate(
-                          exercise['sets'],
-                          (setIndex) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                    flex: 1,
-                                    child: Text("${setIndex + 1}. Set")),
-                                Expanded(
-                                  flex: 2,
-                                  child: TextField(
-                                    controller:
-                                        repsControllers[exerciseId]![setIndex],
-                                    decoration: InputDecoration(
-                                      labelText: "Tekrar / Süre",
-                                      border: OutlineInputBorder(),
+        body: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: exercises.length,
+                itemBuilder: (context, index) {
+                  final exercise = exercises[index];
+                  final exerciseId = exercise['id'];
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Card(
+                      elevation: 4,
+                      child: Theme(
+                        data: Theme.of(context).copyWith(
+                            dividerColor: Colors.transparent,
+                            splashColor: Colors.transparent),
+                        child: ExpansionTile(
+                          key: Key(index.toString()),
+                          title: Text(
+                            exercise['title'],
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          subtitle: Text(
+                            "${exercise['sets']} sets x ${exercise['reps']} reps",
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                          ),
+                          initiallyExpanded: index == expandedIndex,
+                          onExpansionChanged: (isExpanded) {
+                            if (isExpanded) {
+                              setState(() {
+                                expandedIndex = index;
+                              });
+                            } else {
+                              setState(() {
+                                expandedIndex = -1;
+                              });
+                            }
+                          },
+                          children: List.generate(
+                            exercise['sets'],
+                            (setIndex) => Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                      flex: 1,
+                                      child: Text("${setIndex + 1}. Set")),
+                                  Expanded(
+                                    flex: 2,
+                                    child: TextField(
+                                      controller: weightControllers[
+                                          exerciseId]![setIndex],
+                                      decoration: InputDecoration(
+                                        labelText: "Ağırlık",
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          exerciseInputs[exerciseId]![setIndex]
+                                              ['weight'] = value;
+                                        });
+                                      },
                                     ),
-                                    keyboardType: TextInputType.number,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        exerciseInputs[exerciseId]![setIndex]
-                                            ['reps'] = value;
-                                      });
-                                    },
                                   ),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: TextField(
-                                    controller: weightControllers[exerciseId]![
-                                        setIndex],
-                                    decoration: InputDecoration(
-                                      labelText: "Ağırlık",
-                                      border: OutlineInputBorder(),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: TextField(
+                                      controller: repsControllers[exerciseId]![
+                                          setIndex],
+                                      decoration: InputDecoration(
+                                        labelText: "Tekrar / Süre",
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          exerciseInputs[exerciseId]![setIndex]
+                                              ['reps'] = value;
+                                        });
+                                      },
                                     ),
-                                    keyboardType: TextInputType.number,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        exerciseInputs[exerciseId]![setIndex]
-                                            ['weight'] = value;
-                                      });
-                                    },
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
-          Row(
-            children: [
-              SizedBox(width: 20),
-              Expanded(
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.lightGreen),
-                    onPressed: () async {
-                      saveWorkout();
-                    },
-                    child: Text(
-                      "Kaydet ve Çık",
-                      style: TextStyle(color: Colors.white),
-                    )),
-              ),
-              SizedBox(width: 20),
-              Expanded(
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      "Kaydetmeden Çık",
-                      style: TextStyle(color: Colors.white),
-                    )),
-              ),
-              SizedBox(width: 20),
-            ],
-          ),
-        ],
+            Row(
+              children: [
+                SizedBox(width: 20),
+                Expanded(
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.lightGreen),
+                      onPressed: () async {
+                        // saveWorkout();
+                        showConfirmationDialog(
+                            context: context,
+                            title: 'Çıkış',
+                            content:
+                                'Antrenman kaydediliyor ve çıkış yapılıyor',
+                            confirmButtonText: 'Çıkış',
+                            cancelButtonText: 'Vazgeç',
+                            onConfirm: () {
+                              saveWorkout();
+                              SnackbarHelper.show(
+                                context,
+                                message: 'Kamera izni gerekli!',
+                                icon: Icons.camera_alt_outlined,
+                                backgroundColor: Colors.redAccent,
+                              );
+                            });
+                      },
+                      child: Text(
+                        "Kaydet ve Çık",
+                        style: TextStyle(color: Colors.white),
+                      )),
+                ),
+                SizedBox(width: 20),
+                Expanded(
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.redAccent),
+                      onPressed: () {
+                        showConfirmationDialog(
+                            context: context,
+                            title: 'Çıkış',
+                            content: 'Antrenman kaydedilmeden çıkılıyor',
+                            confirmButtonText: 'Çıkış',
+                            cancelButtonText: 'Vazgeç',
+                            onConfirm: () {
+                              Navigator.pop(context);
+                            });
+                      },
+                      child: Text(
+                        "Kaydetmeden Çık",
+                        style: TextStyle(color: Colors.white),
+                      )),
+                ),
+                SizedBox(width: 20),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
+}
+
+Future<bool?> showExitConfirmationDialog(BuildContext context) {
+  return showDialog<bool>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text("Çıkış"),
+        content: Text("Antrenman kaydedilmeden çıkılsın mı?"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(true); // Çıkışı onayla
+            },
+            child: Text("Evet"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false); // Çıkışı iptal et
+            },
+            child: Text("Hayır"),
+          ),
+        ],
+      );
+    },
+  );
 }

@@ -790,6 +790,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
     });
   }
 
+  bool isDescending = true;
   void _showDialog() {
     _pageController.clear();
     _selectedIcon = Icons.fitness_center;
@@ -1166,20 +1167,73 @@ class _WorkoutPageState extends State<WorkoutPage> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                FutureBuilder<List<Map<String, dynamic>>>(
-                  future: DatabaseHelper.instance.fetchDynamicPages(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Center(
-                          child: Text('Bir hata oluştu: ${snapshot.error}'));
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(child: Text('Henüz geçmiş bulunmuyor.'));
-                    } else {
-                      final historyList = snapshot.data!;
-                      return Expanded(
-                        child: ListView.builder(
+                // Sıralama Butonu
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    PopupMenuButton<String>(
+                      icon: Icon(Icons.sort, color: Colors.grey),
+                      tooltip: 'Sıralama Seçenekleri',
+                      onSelected: (value) {
+                        setState(() {
+                          // Seçilen değere göre sıralama yönünü değiştir
+                          isDescending = value == 'En Yeniden En Eskiye';
+                        });
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 'En Yeniden En Eskiye',
+                          child: Row(
+                            children: [
+                              Text('En Yeniden En Eskiye '),
+                              if (isDescending)
+                                Icon(Icons.check,
+                                    size: 20), // Seçilen öğede tik işareti
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'En Eskiden En Yeniye',
+                          child: Row(
+                            children: [
+                              Text('En Eskiden En Yeniye '),
+                              if (!isDescending)
+                                Icon(Icons.check,
+                                    size: 20), // Seçilen öğede tik işareti
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                // Listeyi göstermek için FutureBuilder
+                Expanded(
+                  child: FutureBuilder<List<Map<String, dynamic>>>(
+                    future: DatabaseHelper.instance.fetchDynamicPages(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(
+                            child: Text('Bir hata oluştu: ${snapshot.error}'));
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Center(child: Text('Henüz geçmiş bulunmuyor.'));
+                      } else {
+                        // Orijinal liste immutable olduğundan, bir kopyasını oluşturuyoruz
+                        var historyList =
+                            List<Map<String, dynamic>>.from(snapshot.data!);
+
+                        // Tarihe göre sıralama
+                        historyList.sort((a, b) {
+                          final dateA = DateTime.parse(a['createdAt']);
+                          final dateB = DateTime.parse(b['createdAt']);
+                          return isDescending
+                              ? dateB.compareTo(dateA)
+                              : dateA.compareTo(dateB);
+                        });
+
+                        return ListView.builder(
                           itemCount: historyList.length,
                           itemBuilder: (context, index) {
                             final workout = historyList[index];
@@ -1216,8 +1270,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
                                                           'id']); // Silme işlemi
                                               Navigator.pop(
                                                   context); // Diyalog kapat
-                                              (context as Element)
-                                                  .reassemble(); // Arayüzü yenile
+                                              setState(() {}); // Arayüzü yenile
                                             },
                                             child: Text('Sil'),
                                           ),
@@ -1240,10 +1293,10 @@ class _WorkoutPageState extends State<WorkoutPage> {
                               },
                             );
                           },
-                        ),
-                      );
-                    }
-                  },
+                        );
+                      }
+                    },
+                  ),
                 ),
               ],
             )
@@ -1251,6 +1304,8 @@ class _WorkoutPageState extends State<WorkoutPage> {
         ),
       ),
     );
+
+    // ])));
   }
 }
 
