@@ -1264,11 +1264,11 @@ class DetailHistoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detay Sayfası'),
+        title: Text('Detaylar'),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: DatabaseHelper.instance
-            .getWorkoutsByHistoryId(historyId), // Filtreleme fonksiyonu
+        future: DatabaseHelper.instance.getWorkoutsByHistoryId(historyId),
+        // Filtreleme fonksiyonu
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -1278,20 +1278,51 @@ class DetailHistoryPage extends StatelessWidget {
             return Center(child: Text('Bu sayfa için veri bulunamadı.'));
           } else {
             final workouts = snapshot.data!;
+
+            // Title'lara göre grupla
+            final groupedWorkouts = <String, List<Map<String, dynamic>>>{};
+            for (var workout in workouts) {
+              final title = workout['title'] ?? 'Hareket İsmi Yok';
+              if (!groupedWorkouts.containsKey(title)) {
+                groupedWorkouts[title] = [];
+              }
+              groupedWorkouts[title]!.add(workout);
+            }
+
             return ListView.builder(
-              itemCount: workouts.length,
+              itemCount: groupedWorkouts.length,
               itemBuilder: (context, index) {
-                final workout = workouts[index];
-                return ListTile(
-                  title: Text(workout['title'] ?? 'Hareket İsmi Yok'),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                          'Set Sayısı: ${workout['set_count'] ?? 'Bilinmiyor'}'),
-                      Text('Tekrar: ${workout['reps'] ?? 'Bilinmiyor'}'),
-                      Text('Ağırlık: ${workout['weight'] ?? 'Bilinmiyor'}'),
-                    ],
+                final title = groupedWorkouts.keys.elementAt(index);
+                final sets = groupedWorkouts[title]!;
+
+                return Card(
+                  margin: EdgeInsets.all(8.0),
+                  elevation: 4.0,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8.0),
+                        ...sets.map((set) {
+                          return Padding(
+                            padding:
+                                const EdgeInsets.only(left: 16.0, bottom: 4.0),
+                            child: Text(
+                              '${set['set_count']}.Set: ${set['weight'] ?? 'N/A'} kg ${set['reps'] ?? 'N/A'} tekrar',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
                   ),
                 );
               },
