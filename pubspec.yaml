@@ -30,6 +30,8 @@ dependencies:
   keyboard_avoider: ^0.2.0
   flutter_dotenv: ^5.2.1
   flutter_html: ^3.0.0-beta.2
+  flutter_colorpicker: ^1.1.0
+  icons_plus: ^5.0.0
 
 flutter_native_splash:
   color: "#ffffff"

@@ -1,14 +1,16 @@
 import 'package:fitpil/pages/activity_page.dart';
 import 'package:fitpil/pages/calorie_dart.dart';
 import 'package:fitpil/pages/fat_rate.dart';
-import 'package:fitpil/pages/workout_routine.dart';
+import 'package:fitpil/screens/workout_routine.dart';
 import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart'; // Adım sayar paketi
 import '../pages/step_page.dart';
 import 'package:fitpil/utils/permission.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-// screen heighta göre responsive
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:icons_plus/icons_plus.dart';
+import '../pages/ffmi_calculate.dart';
+import '../pages/onerepmax_calculate.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -149,6 +151,108 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             const SizedBox(height: 16.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                // Kalori Butonu
+                SizedBox(
+                  width: buttonWidth,
+                  height: buttonHeight,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      backgroundColor: Colors.lightGreen,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ffmiCalculate()),
+                      );
+                    },
+                    child: Ink(
+                      decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                              colors: [Colors.deepOrange, Colors.greenAccent],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight),
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(MingCute.fitness_fill,
+                                color: Colors.white, size: 40),
+                            SizedBox(height: 10.0),
+                            Text(
+                              "FFMI",
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 18.0),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: buttonWidth,
+                  height: buttonHeight,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      backgroundColor: Colors.lightGreen,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => rmCalculate(),
+                        ),
+                      );
+                    },
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                            colors: [
+                              Color.fromRGBO(154, 0, 0, 1),
+                              Colors.black
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(MingCute.barbell_line,
+                                color: Colors.white, size: 40),
+                            SizedBox(height: 10.0),
+                            Text(
+                              "1 RM",
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 18.0),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 16,
+            ),
             // Kalori ve Yağ Oranı Butonları
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -245,54 +349,54 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             const SizedBox(height: 16.0),
-            SizedBox(
-              width: screenWidth * 0.92,
-              height: screenHeight * 0.228,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => WorkoutPage(),
-                    ),
-                  );
-                },
-                child: Ink(
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Colors.black, Colors.red],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.fitness_center,
-                          color: Colors.white54,
-                          size: 50.0,
-                        ),
-                        SizedBox(height: 16.0),
-                        Text(
-                          "Antrenman Rutini",
-                          style:
-                              TextStyle(color: Colors.white54, fontSize: 20.0),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            // SizedBox(
+            //   width: screenWidth * 0.92,
+            //   height: screenHeight * 0.228,
+            //   child: ElevatedButton(
+            //     style: ElevatedButton.styleFrom(
+            //       padding: EdgeInsets.zero,
+            //       backgroundColor: Colors.transparent,
+            //       shadowColor: Colors.transparent,
+            //     ),
+            //     onPressed: () {
+            //       Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //           builder: (context) => WorkoutPage(),
+            //         ),
+            //       );
+            //     },
+            //     child: Ink(
+            //       decoration: BoxDecoration(
+            //         gradient: const LinearGradient(
+            //           colors: [Colors.black, Colors.red],
+            //           begin: Alignment.topLeft,
+            //           end: Alignment.bottomRight,
+            //         ),
+            //         borderRadius: BorderRadius.circular(12),
+            //       ),
+            //       child: Container(
+            //         alignment: Alignment.center,
+            //         child: const Column(
+            //           mainAxisAlignment: MainAxisAlignment.center,
+            //           children: [
+            //             Icon(
+            //               Icons.fitness_center,
+            //               color: Colors.white54,
+            //               size: 50.0,
+            //             ),
+            //             SizedBox(height: 16.0),
+            //             Text(
+            //               "Antrenman Rutini",
+            //               style:
+            //                   TextStyle(color: Colors.white54, fontSize: 20.0),
+            //             ),
+            //           ],
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),

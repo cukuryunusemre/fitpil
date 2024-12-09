@@ -1,5 +1,5 @@
 import 'package:fitpil/pages/calorie_dart.dart';
-import 'package:fitpil/pages/workout_routine.dart';
+import 'package:fitpil/screens/workout_routine.dart';
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
 import 'package:intl/intl.dart';
@@ -312,15 +312,15 @@ class _InWorkoutPageState extends State<InWorkoutPage> {
                             title: 'Çıkış',
                             content:
                                 'Antrenman kaydediliyor ve çıkış yapılıyor',
-                            confirmButtonText: 'Çıkış',
+                            confirmButtonText: 'Kaydet',
                             cancelButtonText: 'Vazgeç',
                             onConfirm: () {
                               saveWorkout();
                               SnackbarHelper.show(
                                 context,
-                                message: 'Kamera izni gerekli!',
-                                icon: Icons.camera_alt_outlined,
-                                backgroundColor: Colors.redAccent,
+                                message: 'Antrenman Başarıyla Kaydedildi!',
+                                icon: Icons.save,
+                                backgroundColor: Colors.lightGreen,
                               );
                             });
                       },

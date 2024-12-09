@@ -1,6 +1,7 @@
+import 'package:fitpil/screens/workout_routine.dart';
 import 'package:flutter/material.dart';
 import 'screens/home.dart';
-import 'screens/profil.dart';
+import 'pages/profil.dart';
 import 'screens/progress_page.dart';
 import 'dart:async';
 import 'pages/menu.dart';
@@ -8,6 +9,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +40,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => SplashScreen(),
         '/main_menu': (context) => MainMenu(),
         '/home': (context) => HomePage(),
-        '/profile': (context) => ProfilePage(),
+        '/profile': (context) => WorkoutPage(),
         '/progress': (context) => ProgressPage(),
       },
     );
@@ -114,11 +117,26 @@ class MainMenu extends StatefulWidget {
 class _MainMenuState extends State<MainMenu> {
   int _selectedIndex = 1;
   final PageController _pageController = PageController(initialPage: 1);
+  String profileImage = 'images/user_icon.png'; // Varsayılan resim yolu
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData(); // Veriyi yükle
+  }
+
+  Future<void> _loadProfileData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      profileImage = prefs.getString('profile_image') ?? '';
+    });
+  }
 
   final List<Widget> _pages = [
     ProgressPage(),
     HomePage(),
-    ProfilePage(),
+    WorkoutPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -139,7 +157,7 @@ class _MainMenuState extends State<MainMenu> {
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
+  final String? profileImageUrl = null;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,6 +173,30 @@ class _MainMenuState extends State<MainMenu> {
           child: SafeArea(
             child: Stack(
               children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProfilePage(),
+                          ),
+                        );
+                      },
+                      child: CircleAvatar(
+                        radius: 18,
+                        backgroundImage: profileImage.isNotEmpty
+                            ? FileImage(File(
+                                profileImage)) // Profil resmi dosyadan çekilir
+                            : AssetImage('assets/default_user.png')
+                                as ImageProvider, // Varsayılan resim
+                      ),
+                    ),
+                  ),
+                ),
                 Align(
                   alignment: Alignment.centerRight,
                   child: IconButton(
@@ -174,7 +216,7 @@ class _MainMenuState extends State<MainMenu> {
                         fontFamily: 'Pacifico',
                         color: Colors.white70),
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -205,8 +247,8 @@ class _MainMenuState extends State<MainMenu> {
             label: 'Ana Sayfa',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profil',
+            icon: Icon(FontAwesomeIcons.dumbbell),
+            label: 'Antrenman',
           ),
         ],
         currentIndex: _selectedIndex,
@@ -217,6 +259,7 @@ class _MainMenuState extends State<MainMenu> {
     );
   }
 }
+
 class SetupScreen extends StatelessWidget {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
@@ -289,4 +332,3 @@ class SetupScreen extends StatelessWidget {
     );
   }
 }
-

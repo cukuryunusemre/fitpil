@@ -49,7 +49,6 @@ class _ProfilePageState extends State<ProfilePage> {
     final prefs = await SharedPreferences.getInstance();
 
     setState(() {
-
       nameController.text = prefs.getString('name') ?? '';
       ageController.text = prefs.getString('age') ?? '';
       heightController.text = prefs.getString('height') ?? '';
@@ -239,11 +238,56 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
   }
+
+  // leading: IconButton(
+  // onPressed: () {
+  // Navigator.pop(context);
+  // },
+  // icon: Icon(Icons.arrow_back),
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.green, Colors.greenAccent],
+            ),
+          ),
+          child: SafeArea(
+            child: Stack(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: Colors.white54,
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Fit Pill",
+                    style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Pacifico',
+                        color: Colors.white70),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             GestureDetector(
@@ -288,7 +332,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       radius: 60,
                       backgroundImage: _profileImage != null
                           ? FileImage(_profileImage!)
-                          : const AssetImage('images/user_icon.png') as ImageProvider,
+                          : const AssetImage('images/user_icon.png')
+                              as ImageProvider,
                     ),
                   ),
                   Positioned(
@@ -343,8 +388,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       heightController),
                   _buildInfoTile('Kilo (kg)', weightController.text,
                       'Kilo (kg)', weightController),
-                  _buildReadOnlyTile('Yağ Oranı', fatPercentage,color: _getFatPercentageColor(fatPercentage)),
-                  _buildReadOnlyTile('BMI', _calculateBMI(), color: _getBMIColor()),
+                  _buildReadOnlyTile('Yağ Oranı', fatPercentage,
+                      color: _getFatPercentageColor(fatPercentage)),
+                  _buildReadOnlyTile('BMI', _calculateBMI(),
+                      color: _getBMIColor()),
                   _buildReadOnlyTile('Günlük Kalori', Kcal),
                 ],
               ),
@@ -373,7 +420,9 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w600,color: Colors.white)),
+          Text(title,
+              style: const TextStyle(
+                  fontWeight: FontWeight.w600, color: Colors.white)),
           const SizedBox(height: 8),
           Text(value.isEmpty ? 'Bilgi Yok' : value,
               style: TextStyle(color: Colors.white)),
@@ -387,20 +436,23 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildReadOnlyTile(String title, String value,{Color? color}) {
+  Widget _buildReadOnlyTile(String title, String value, {Color? color}) {
     return Card(
       color: color ?? Colors.blueAccent[200],
       margin: const EdgeInsets.all(4.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w600,color: Colors.white)),
+          Text(title,
+              style: const TextStyle(
+                  fontWeight: FontWeight.w600, color: Colors.white)),
           const SizedBox(height: 8),
           Text(value, style: TextStyle(color: Colors.white)),
         ],
       ),
     );
   }
+
   String _calculateBMI() {
     if (heightController.text.isNotEmpty && weightController.text.isNotEmpty) {
       final double heightInMeters = double.parse(heightController.text) / 100;
@@ -415,11 +467,11 @@ class _ProfilePageState extends State<ProfilePage> {
           return 'Normal (${bmi.toStringAsFixed(1)})';
         } else if (bmi >= 25 && bmi < 30) {
           return 'Kilolu (${bmi.toStringAsFixed(1)})';
-        } else if (bmi >=30 && bmi <40){
+        } else if (bmi >= 30 && bmi < 40) {
           return 'Obez (${bmi.toStringAsFixed(1)})';
-        }else{
-          return  'Morbid Obez(${bmi.toStringAsFixed(1)})';
-    }
+        } else {
+          return 'Morbid Obez(${bmi.toStringAsFixed(1)})';
+        }
       }
     }
     return 'Bilgi Yok';
@@ -455,11 +507,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
     if (fat <= 7 && fat > 0) {
       return Colors.red;
-    }else if(fat > 7 && fat <= 15){
+    } else if (fat > 7 && fat <= 15) {
       return Colors.green;
     } else if (fat > 15 && fat <= 20) {
       return Colors.orange;
-    }else if (fat > 20 && fat <= 25) {
+    } else if (fat > 20 && fat <= 25) {
       return Colors.red;
     } else if (fat > 25) {
       return Color.fromARGB(255, 128, 0, 0);
@@ -467,6 +519,4 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Colors.blueAccent;
   }
-
 }
-

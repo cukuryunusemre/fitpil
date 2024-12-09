@@ -1,7 +1,8 @@
 import 'package:fitpil/pages/in_workout.dart';
 import 'package:flutter/material.dart';
-import 'database_helper.dart';
+import '../pages/database_helper.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -277,7 +278,7 @@ class _DynamicPageState extends State<DynamicPage> {
             gradient: LinearGradient(
               colors: [
                 widget.iconColor, // Başlangıç rengi
-                Colors.red, // Bitiş rengi
+                widget.iconColor.withOpacity(0.5), // Bitiş rengi
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -430,7 +431,10 @@ class _DynamicPageState extends State<DynamicPage> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
-                      colors: [widget.iconColor, Colors.red],
+                      colors: [
+                        widget.iconColor,
+                        widget.iconColor.withAlpha(100)
+                      ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -470,6 +474,53 @@ class _WorkoutPageState extends State<WorkoutPage> {
   IconData _selectedIcon = Icons.fitness_center;
   Color _iconColor = Colors.black;
   TextEditingController _pageController = TextEditingController();
+
+  void _openColorPickerDialog() {
+    Color selectedColor = _iconColor; // Dialog başlangıç rengi
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              title: Text('Renk Seç'),
+              content: SingleChildScrollView(
+                child: ColorPicker(
+                  pickerColor: selectedColor, // Dialog içindeki başlangıç rengi
+                  onColorChanged: (color) {
+                    setStateDialog(() {
+                      selectedColor = color; // Dialog içinde renk değişikliği
+                    });
+                  },
+                  colorPickerWidth: 300.0,
+                  pickerAreaHeightPercent: 0.8,
+                  enableAlpha: false,
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Dialog'u kapat
+                  },
+                  child: Text('Vazgeç'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Dialog'u kapat
+                    setState(() {
+                      _iconColor =
+                          selectedColor; // Ana widget'taki rengi güncelle
+                    });
+                  },
+                  child: Text('Tamam'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -666,52 +717,67 @@ class _WorkoutPageState extends State<WorkoutPage> {
                     children: [
                       Expanded(
                         child: IconButton(
-                          icon:
-                              Icon(Icons.circle, color: Colors.black, size: 30),
                           onPressed: () {
                             setState(() {
                               _iconColor = Colors.black;
                             });
                           },
+                          icon: Icon(
+                            Icons.circle,
+                            color: Colors.black,
+                            size: 30,
+                          ),
                         ),
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: Icon(Icons.circle,
-                              color: Colors.blueAccent, size: 30),
+                          icon: Icon(
+                            Icons.circle,
+                            color: Color.fromRGBO(0, 59, 150, 1),
+                            size: 30,
+                          ),
                           onPressed: () {
                             setState(() {
-                              _iconColor = Colors.blueAccent;
+                              _iconColor = Color.fromRGBO(0, 59, 150, 1);
                             });
                           },
                         ),
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: Icon(Icons.circle,
-                              color: Colors.redAccent, size: 30),
+                          icon: Icon(
+                            Icons.circle,
+                            color: Color.fromRGBO(185, 29, 29, 1),
+                            size: 30,
+                          ),
                           onPressed: () {
                             setState(() {
-                              _iconColor = Colors.redAccent;
+                              _iconColor = Color.fromRGBO(185, 29, 29, 1);
                             });
                           },
                         ),
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: Icon(Icons.circle,
-                              color: Colors.greenAccent, size: 30),
+                          icon: Icon(
+                            Icons.circle,
+                            color: Color.fromRGBO(54, 131, 83, 1),
+                            size: 30,
+                          ),
                           onPressed: () {
                             setState(() {
-                              _iconColor = Colors.greenAccent;
+                              _iconColor = Color.fromRGBO(54, 131, 83, 1);
                             });
                           },
                         ),
                       ),
                       Expanded(
                         child: IconButton(
-                          icon: Icon(Icons.circle,
-                              color: Colors.deepOrangeAccent, size: 30),
+                          icon: Icon(
+                            Icons.circle,
+                            color: Colors.deepOrangeAccent,
+                            size: 30,
+                          ),
                           onPressed: () {
                             setState(() {
                               _iconColor = Colors.deepOrangeAccent;
@@ -721,13 +787,26 @@ class _WorkoutPageState extends State<WorkoutPage> {
                       ),
                       Expanded(
                         child: IconButton(
-                          icon:
-                              Icon(Icons.circle, color: Colors.teal, size: 30),
+                          icon: Icon(
+                            Icons.circle,
+                            color: Colors.teal,
+                            size: 30,
+                          ),
                           onPressed: () {
                             setState(() {
                               _iconColor = Colors.teal;
                             });
                           },
+                        ),
+                      ),
+                      Expanded(
+                        child: IconButton(
+                          onPressed: _openColorPickerDialog,
+                          icon: Icon(
+                            Icons.color_lens,
+                            color: Colors.blueGrey,
+                            size: 30,
+                          ),
                         ),
                       ),
                     ],
@@ -880,12 +959,12 @@ class _WorkoutPageState extends State<WorkoutPage> {
                         child: IconButton(
                           icon: Icon(
                             Icons.circle,
-                            color: Colors.blueAccent,
+                            color: Color.fromRGBO(0, 59, 150, 1),
                             size: 30,
                           ),
                           onPressed: () {
                             setState(() {
-                              _iconColor = Colors.blueAccent;
+                              _iconColor = Color.fromRGBO(0, 59, 150, 1);
                             });
                           },
                         ),
@@ -894,12 +973,12 @@ class _WorkoutPageState extends State<WorkoutPage> {
                         child: IconButton(
                           icon: Icon(
                             Icons.circle,
-                            color: Colors.redAccent,
+                            color: Color.fromRGBO(185, 29, 29, 1),
                             size: 30,
                           ),
                           onPressed: () {
                             setState(() {
-                              _iconColor = Colors.redAccent;
+                              _iconColor = Color.fromRGBO(185, 29, 29, 1);
                             });
                           },
                         ),
@@ -908,12 +987,12 @@ class _WorkoutPageState extends State<WorkoutPage> {
                         child: IconButton(
                           icon: Icon(
                             Icons.circle,
-                            color: Colors.greenAccent,
+                            color: Color.fromRGBO(54, 131, 83, 1),
                             size: 30,
                           ),
                           onPressed: () {
                             setState(() {
-                              _iconColor = Colors.greenAccent;
+                              _iconColor = Color.fromRGBO(54, 131, 83, 1);
                             });
                           },
                         ),
@@ -944,6 +1023,16 @@ class _WorkoutPageState extends State<WorkoutPage> {
                               _iconColor = Colors.teal;
                             });
                           },
+                        ),
+                      ),
+                      Expanded(
+                        child: IconButton(
+                          onPressed: _openColorPickerDialog,
+                          icon: Icon(
+                            Icons.color_lens,
+                            color: Colors.blueGrey,
+                            size: 30,
+                          ),
                         ),
                       ),
                     ],
@@ -1002,304 +1091,320 @@ class _WorkoutPageState extends State<WorkoutPage> {
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          bottom: const TabBar(
-            splashFactory: NoSplash.splashFactory,
-            labelStyle: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.white70),
-            unselectedLabelStyle:
-                TextStyle(fontSize: 14, color: Colors.white54),
-            indicatorColor: Colors.white,
-            indicatorWeight: 4.0,
-            tabs: [
-              Tab(
-                text: "Rutinlerim",
-              ),
-              Tab(
-                text: "Geçmiş",
-              ),
-            ],
-          ),
-          automaticallyImplyLeading:
-              false, // Varsayılan leading özelliğini devre dışı bırak
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.black, // Başlangıç rengi
-                  Colors.red, // Bitiş rengi
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: SafeArea(
-              child: Stack(
-                children: [
-                  // Geri Dön Butonu
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  // Başlık ve İkon
-                  Align(
-                    alignment: Alignment.center,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.fitness_center,
-                          color: Colors.white,
-                          size: 50,
-                        ),
-                        SizedBox(width: 8),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        body: TabBarView(
+
+        // appBar: AppBar(
+        //   bottom: const TabBar(
+        //     splashFactory: NoSplash.splashFactory,
+        //     labelStyle: TextStyle(
+        //         fontSize: 16,
+        //         fontWeight: FontWeight.bold,
+        //         color: Colors.white70),
+        //     unselectedLabelStyle:
+        //         TextStyle(fontSize: 14, color: Colors.white54),
+        //     indicatorColor: Colors.white,
+        //     indicatorWeight: 4.0,
+        //     tabs: [
+        //       Tab(
+        //         text: "Rutinlerim",
+        //       ),
+        //       Tab(
+        //         text: "Geçmiş",
+        //       ),
+        //     ],
+        //   ),
+        // ),
+        //   automaticallyImplyLeading:
+        //       false, // Varsayılan leading özelliğini devre dışı bırak
+        //   flexibleSpace: Container(
+        //     decoration: BoxDecoration(
+        //       gradient: LinearGradient(
+        //         colors: [
+        //           Colors.green, // Başlangıç rengi
+        //           Colors.greenAccent, // Bitiş rengi
+        //         ],
+        //         begin: Alignment.topLeft,
+        //         end: Alignment.bottomRight,
+        //       ),
+        //     ),
+        //     child: SafeArea(
+        //       child: Stack(
+        //         children: [],
+        //       ),
+        //     ),
+        //   ),
+        // ),
+        body: Column(
           children: [
-            Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: pages.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        leading: Icon(
-                          pages[index]['icon'],
-                          color: pages[index]['iconColor'],
-                          size: 40,
-                        ),
-                        title: Text(
-                          pages[index]['title'],
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                _editPage(index);
-                              },
-                              icon: Icon(
-                                Icons.edit,
-                                color: pages[index]['iconColor'],
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                _deletePageDialog(index);
-                                // Navigator.pop(context);
-                              },
-                              icon: Icon(
-                                Icons.delete,
-                                color: pages[index]['iconColor'],
-                              ),
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DynamicPage(
-                                pageId: pages[index]['id'],
-                                title: pages[index]['title'],
-                                icon: pages[index]['icon'],
-                                iconColor: pages[index]['iconColor'],
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.green, Colors.greenAccent],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      width: 60,
-                      height: 60,
-                      // padding: EdgeInsets.all(16),
-                      margin: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: [Colors.black, Colors.red],
-                          begin: Alignment.bottomLeft,
-                          end: Alignment.topRight,
-                        ),
-                      ),
-                      child: FloatingActionButton(
-                        backgroundColor: Colors.transparent,
-                        elevation: 0,
-                        splashColor: Colors.transparent,
-                        highlightElevation: 0,
-                        hoverElevation: 0,
-                        child: Icon(
-                          Icons.add,
-                          color: Colors.white70,
-                        ),
-                        onPressed: _showDialog,
-                        tooltip: "Yeni Rutin Ekle",
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              ),
+              child: TabBar(
+                splashFactory: NoSplash.splashFactory,
+                labelStyle: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white70),
+                unselectedLabelStyle:
+                    TextStyle(fontSize: 14, color: Colors.white54),
+                indicatorColor: Colors.white,
+                indicatorWeight: 4.0,
+                tabs: [
+                  Tab(text: 'Rutinlerim'),
+                  Tab(text: 'Geçmiş'),
+                ],
+              ),
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Sıralama Butonu
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    PopupMenuButton<String>(
-                      icon: Icon(Icons.sort, color: Colors.grey),
-                      tooltip: 'Sıralama Seçenekleri',
-                      onSelected: (value) {
-                        setState(() {
-                          // Seçilen değere göre sıralama yönünü değiştir
-                          isDescending = value == 'En Yeniden En Eskiye';
-                        });
-                      },
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          value: 'En Yeniden En Eskiye',
-                          child: Row(
-                            children: [
-                              Text('En Yeniden En Eskiye '),
-                              if (isDescending)
-                                Icon(Icons.check,
-                                    size: 20), // Seçilen öğede tik işareti
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'En Eskiden En Yeniye',
-                          child: Row(
-                            children: [
-                              Text('En Eskiden En Yeniye '),
-                              if (!isDescending)
-                                Icon(Icons.check,
-                                    size: 20), // Seçilen öğede tik işareti
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                // Listeyi göstermek için FutureBuilder
-                Expanded(
-                  child: FutureBuilder<List<Map<String, dynamic>>>(
-                    future: DatabaseHelper.instance.fetchDynamicPages(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return Center(
-                            child: Text('Bir hata oluştu: ${snapshot.error}'));
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Center(child: Text('Henüz geçmiş bulunmuyor.'));
-                      } else {
-                        // Orijinal liste immutable olduğundan, bir kopyasını oluşturuyoruz
-                        var historyList =
-                            List<Map<String, dynamic>>.from(snapshot.data!);
-
-                        // Tarihe göre sıralama
-                        historyList.sort((a, b) {
-                          final dateA = DateTime.parse(a['createdAt']);
-                          final dateB = DateTime.parse(b['createdAt']);
-                          return isDescending
-                              ? dateB.compareTo(dateA)
-                              : dateA.compareTo(dateB);
-                        });
-
-                        return ListView.builder(
-                          itemCount: historyList.length,
+            Expanded(
+              child: TabBarView(
+                children: [
+                  Column(
+                    children: [
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: pages.length,
                           itemBuilder: (context, index) {
-                            final workout = historyList[index];
                             return ListTile(
-                              title:
-                                  Text(workout['title'] ?? 'Bilinmeyen Başlık'),
-                              subtitle: Text(
-                                workout['createdAt'] != null
-                                    ? DateFormat('dd MMM yyyy').format(
-                                        DateTime.parse(workout['createdAt']),
-                                      )
-                                    : 'Tarih Yok',
+                              leading: Icon(
+                                pages[index]['icon'],
+                                color: pages[index]['iconColor'],
+                                size: 40,
                               ),
-                              trailing: IconButton(
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        title: Text('Silme Onayı'),
-                                        content: Text(
-                                            'Bu geçmişi ve ilgili tüm verileri silmek istediğinize emin misiniz?'),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            child: Text('Vazgeç'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () async {
-                                              await DatabaseHelper.instance
-                                                  .deleteHistoryWorkoutWithWorkouts(
-                                                      workout[
-                                                          'id']); // Silme işlemi
-                                              Navigator.pop(
-                                                  context); // Diyalog kapat
-                                              setState(() {}); // Arayüzü yenile
-                                            },
-                                            child: Text('Sil'),
-                                          ),
-                                        ],
-                                      );
+                              title: Text(
+                                pages[index]['title'],
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      _editPage(index);
                                     },
-                                  );
-                                },
-                                icon: Icon(Icons.delete),
+                                    icon: Icon(
+                                      Icons.edit,
+                                      color: pages[index]['iconColor'],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      _deletePageDialog(index);
+                                      // Navigator.pop(context);
+                                    },
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color: pages[index]['iconColor'],
+                                    ),
+                                  ),
+                                ],
                               ),
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => DetailHistoryPage(
-                                      historyId: workout['id'],
+                                    builder: (context) => DynamicPage(
+                                      pageId: pages[index]['id'],
+                                      title: pages[index]['title'],
+                                      icon: pages[index]['icon'],
+                                      iconColor: pages[index]['iconColor'],
                                     ),
                                   ),
                                 );
                               },
                             );
                           },
-                        );
-                      }
-                    },
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            width: 60,
+                            height: 60,
+                            // padding: EdgeInsets.all(16),
+                            margin: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(
+                                colors: [Colors.black, Colors.red],
+                                begin: Alignment.bottomLeft,
+                                end: Alignment.topRight,
+                              ),
+                            ),
+                            child: FloatingActionButton(
+                              backgroundColor: Colors.red,
+                              elevation: 5,
+                              splashColor: Colors.orange,
+                              highlightElevation: 1,
+                              hoverElevation: 1,
+                              child: Icon(
+                                Icons.add,
+                                color: Colors.white70,
+                              ),
+                              onPressed: _showDialog,
+                              tooltip: "Yeni Rutin Ekle",
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            )
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Sıralama Butonu
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          PopupMenuButton<String>(
+                            icon: Icon(Icons.sort, color: Colors.grey),
+                            tooltip: 'Sıralama Seçenekleri',
+                            onSelected: (value) {
+                              setState(() {
+                                // Seçilen değere göre sıralama yönünü değiştir
+                                isDescending = value == 'En Yeniden En Eskiye';
+                              });
+                            },
+                            itemBuilder: (context) => [
+                              PopupMenuItem(
+                                value: 'En Yeniden En Eskiye',
+                                child: Row(
+                                  children: [
+                                    Text('En Yeniden En Eskiye '),
+                                    if (isDescending)
+                                      Icon(Icons.check,
+                                          size:
+                                              20), // Seçilen öğede tik işareti
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: 'En Eskiden En Yeniye',
+                                child: Row(
+                                  children: [
+                                    Text('En Eskiden En Yeniye '),
+                                    if (!isDescending)
+                                      Icon(Icons.check,
+                                          size:
+                                              20), // Seçilen öğede tik işareti
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      // Listeyi göstermek için FutureBuilder
+                      Expanded(
+                        child: FutureBuilder<List<Map<String, dynamic>>>(
+                          future: DatabaseHelper.instance.fetchDynamicPages(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return Center(
+                                  child: Text(
+                                      'Bir hata oluştu: ${snapshot.error}'));
+                            } else if (!snapshot.hasData ||
+                                snapshot.data!.isEmpty) {
+                              return Center(
+                                  child: Text('Henüz geçmiş bulunmuyor.'));
+                            } else {
+                              // Orijinal liste immutable olduğundan, bir kopyasını oluşturuyoruz
+                              var historyList = List<Map<String, dynamic>>.from(
+                                  snapshot.data!);
+
+                              // Tarihe göre sıralama
+                              historyList.sort((a, b) {
+                                final dateA = DateTime.parse(a['createdAt']);
+                                final dateB = DateTime.parse(b['createdAt']);
+                                return isDescending
+                                    ? dateB.compareTo(dateA)
+                                    : dateA.compareTo(dateB);
+                              });
+
+                              return ListView.builder(
+                                itemCount: historyList.length,
+                                itemBuilder: (context, index) {
+                                  final workout = historyList[index];
+                                  return ListTile(
+                                    title: Text(workout['title'] ??
+                                        'Bilinmeyen Başlık'),
+                                    subtitle: Text(
+                                      workout['createdAt'] != null
+                                          ? DateFormat('dd MMM yyyy').format(
+                                              DateTime.parse(
+                                                  workout['createdAt']),
+                                            )
+                                          : 'Tarih Yok',
+                                    ),
+                                    trailing: IconButton(
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: Text('Silme Onayı'),
+                                              content: Text(
+                                                  'Bu geçmişi ve ilgili tüm verileri silmek istediğinize emin misiniz?'),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  child: Text('Vazgeç'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () async {
+                                                    await DatabaseHelper
+                                                        .instance
+                                                        .deleteHistoryWorkoutWithWorkouts(
+                                                            workout[
+                                                                'id']); // Silme işlemi
+                                                    Navigator.pop(
+                                                        context); // Diyalog kapat
+                                                    setState(
+                                                        () {}); // Arayüzü yenile
+                                                  },
+                                                  child: Text('Sil'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      },
+                                      icon: Icon(Icons.delete),
+                                    ),
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              DetailHistoryPage(
+                                            historyId: workout['id'],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
           ],
         ),
       ),
