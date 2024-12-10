@@ -30,7 +30,7 @@ void showFatRatePage(BuildContext context) {
               ),
               child: FractionallySizedBox(
                 heightFactor:
-                MediaQuery.of(context).size.height > 800 ? 0.62 : 0.7,
+                    MediaQuery.of(context).size.height > 800 ? 0.62 : 0.7,
                 child: Container(
                     padding: const EdgeInsets.all(16),
                     width: MediaQuery.of(context).size.width * 0.85,
@@ -64,17 +64,17 @@ void showFatRatePage(BuildContext context) {
                                         ),
                                         content: const Text(
                                           "Ölçüm yaparken dikkat etmeniz gerekenler\n"
-                                              "\tBoyun: adem elması etrafından\n"
-                                              "\tBel: göbek deliği etrafından\n"
-                                              "\tKalça (Yalnızca kadınlar için): en geniş yerinden\n"
-                                              "Hesaplamada Navy BF Calculator algoritması kullanılmaktadır.",
+                                          "\tBoyun: adem elması etrafından\n"
+                                          "\tBel: göbek deliği etrafından\n"
+                                          "\tKalça (Yalnızca kadınlar için): en geniş yerinden\n"
+                                          "Hesaplamada Navy BF Calculator algoritması kullanılmaktadır.",
                                           style: TextStyle(
                                               fontSize: 15.0, height: 1.5),
                                         ),
                                         actions: [
                                           TextButton(
                                             onPressed:
-                                            Navigator.of(context).pop,
+                                                Navigator.of(context).pop,
                                             child: const Text(
                                               "Anladım",
                                               style: TextStyle(
@@ -136,15 +136,15 @@ void showFatRatePage(BuildContext context) {
                                     return BorderSide.none;
                                   }),
                                   backgroundColor:
-                                  WidgetStateProperty.resolveWith<Color?>(
+                                      WidgetStateProperty.resolveWith<Color?>(
                                           (states) {
-                                        if (states.contains(WidgetState.selected)) {
-                                          return Colors
-                                              .lightGreen; // Seçili buton rengi
-                                        }
-                                        return Colors
-                                            .grey[300]; // Varsayılan buton rengi
-                                      }),
+                                    if (states.contains(WidgetState.selected)) {
+                                      return Colors
+                                          .lightGreen; // Seçili buton rengi
+                                    }
+                                    return Colors
+                                        .grey[300]; // Varsayılan buton rengi
+                                  }),
                                 ),
                                 onSelectionChanged: (Set<String> newSelection) {
                                   setState(() {
@@ -162,7 +162,7 @@ void showFatRatePage(BuildContext context) {
                               FilteringTextInputFormatter.digitsOnly,
                             ],
                             decoration:
-                            const InputDecoration(labelText: "Boy (cm)"),
+                                const InputDecoration(labelText: "Boy (cm)"),
                             onChanged: (value) {
                               setState(() {
                                 _calculateFatRate(setState);
@@ -192,7 +192,7 @@ void showFatRatePage(BuildContext context) {
                               FilteringTextInputFormatter.digitsOnly,
                             ],
                             decoration:
-                            const InputDecoration(labelText: "Bel Çevresi"),
+                                const InputDecoration(labelText: "Bel Çevresi"),
                             onChanged: (value) {
                               setState(() {
                                 _calculateFatRate(setState);
@@ -233,7 +233,8 @@ void showFatRatePage(BuildContext context) {
                               onPressed: () {
                                 _showSaveDialog(context);
                               },
-                              child: const Text("Bu Yağ Oranını Profile Kaydet"),
+                              child:
+                                  const Text("Bu Yağ Oranını Profile Kaydet"),
                             ),
                         ],
                       ),
@@ -272,9 +273,9 @@ void _calculateFatRate(StateSetter setState) {
       _isFatRateCalculated = false;
     } else if (_selectedOption == "Erkek") {
       bodyFat = 495 /
-          (1.0324 -
-              0.19077 * log(waist - neck) / ln10 +
-              0.15456 * log(height) / ln10) -
+              (1.0324 -
+                  0.19077 * log(waist - neck) / ln10 +
+                  0.15456 * log(height) / ln10) -
           450;
       if (bodyFat < 0) {
         _resultController.text = "Lütfen Geçerli Değerler Giriniz";
@@ -285,9 +286,9 @@ void _calculateFatRate(StateSetter setState) {
       }
     } else if (_selectedOption == "Kadın" && _hipController.text.isNotEmpty) {
       bodyFat = 495 /
-          (1.29579 -
-              0.35004 * log(height + hip - neck) / ln10 +
-              0.22100 * log(height) / ln10) -
+              (1.29579 -
+                  0.35004 * (log(waist + hip - neck) / ln10) +
+                  0.22100 * (log(height) / ln10)) -
           450;
       if (bodyFat < 0) {
         _resultController.text = "Lütfen Geçerli Değerler Giriniz";
@@ -310,7 +311,8 @@ void _showSaveDialog(BuildContext context) {
           TextButton(
             onPressed: () async {
               SharedPreferences prefs = await SharedPreferences.getInstance();
-              prefs.setString('fatPercentage', _resultController.text); // Save to shared preferences
+              prefs.setString('fatPercentage',
+                  _resultController.text); // Save to shared preferences
               Navigator.of(context).pop();
             },
             child: const Text("Evet"),
