@@ -51,11 +51,11 @@ class ProgressDB {
 
     final normalizedDate = onlyDate(date);
 
-    // Tarihe göre mevcut bir kayıt olup olmadığını kontrol et
+    // Hem date hem de metric ile birlikte kontrol yapıyoruz
     final existing = await db.query(
       'measurements',
-      where: 'date = ?',
-      whereArgs: [normalizedDate.toIso8601String()],
+      where: 'date = ? AND metric = ?',
+      whereArgs: [normalizedDate.toIso8601String(), metric],
     );
 
     if (existing.isNotEmpty) {
@@ -67,8 +67,8 @@ class ProgressDB {
           'value': value,
           'date': normalizedDate.toIso8601String(),
         },
-        where: 'date = ?',
-        whereArgs: [normalizedDate.toIso8601String()],
+        where: 'date = ? AND metric = ?',
+        whereArgs: [normalizedDate.toIso8601String(), metric],
       );
     } else {
       // Eğer mevcut değilse, yeni bir veri ekle
@@ -82,6 +82,7 @@ class ProgressDB {
       );
     }
   }
+
 
 
   Future<List<Map<String, dynamic>>> fetchAllMeasurements() async {

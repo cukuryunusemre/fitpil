@@ -32,6 +32,7 @@ class _ProgressPageState extends State<ProgressPage> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
+
     _tabController = TabController(length: 2, vsync: this);
     _loadMeasurements();
 
@@ -136,7 +137,7 @@ class DataInputPage extends StatefulWidget {
 }
 
 class _DataInputPageState extends State<DataInputPage> {
-  String selectedMetric = "Kilo";
+  String? selectedMetric;
   final TextEditingController _valueController = TextEditingController();
   DateTime selectedDate = DateTime.now();
 
@@ -154,83 +155,89 @@ class _DataInputPageState extends State<DataInputPage> {
     }
   }
 
-  void _saveData() async {
+  void _saveData(String metric) async {
+
     final value = double.tryParse(_valueController.text);
-    if (value != null) {
+    if (value != null && value >0) {
       // Veriyi veritabanına kaydet
-      await ProgressDB.instance.addOrUpdateMeasurement(selectedMetric, value, selectedDate);
+      await ProgressDB.instance.addOrUpdateMeasurement(metric, value, selectedDate);
 
       // Veriyi listeye ekleyip UI'ı güncelle
-      widget.onSave(selectedMetric, value, selectedDate);
+      widget.onSave(metric, value, selectedDate);
 
       // TextField temizle
       _valueController.clear();
 
-      // Kullanıcıya başarı mesajı göster
-      SnackbarHelper.show(context, message: "Başarıyla kaydedildi");
+      FocusScope.of(context).unfocus();
+
+      SnackbarHelper.show(context, message: "$metric Başarıyla kaydedildi");
     } else {
       // Geçersiz değer girilmişse hata mesajı göster
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Lütfen geçerli bir değer giriniz.")),
-      );
+      SnackbarHelper.show(context, message:"Lütfen geçerli bir değer giriniz.",backgroundColor: Colors.red);
     }
 
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          DropdownButton<String>(
-            value: selectedMetric,
-            items: widget.metrics
-                .map((metric) =>
-                DropdownMenuItem(value: metric, child: Text(metric)))
-                .toList(),
-            onChanged: (value) {
-              setState(() {
-                selectedMetric = value!;
-              });
-            },
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              await ProgressDB.instance.resetTable();
-              SnackbarHelper.show(
+          for (String metric in widget.metrics)
+            ExpansionTile(
+              title: Text(metric),
+              children: [
+                SizedBox(height: 11),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween, // Elemanları sola ve sağa yerleştir
+                  children: [
+                    // Sola yaslanmış TextField
+                    Expanded(
+                        child: TextField(
+                          controller: _valueController,
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            labelText: "$metric Değeri",
+                            counterText: "",
+                          ),
+                          keyboardType: TextInputType.number,
+                          maxLength: 4, // Karakter uzunluğu sınırlaması,
+                        ),
+                    ),
+                    IconButton(onPressed: () => _selectDate(context), icon: Icon(Icons.date_range)),
+                    ElevatedButton(
+                      onPressed: () => _saveData(metric),
+                      child: const Text("Kaydet"),
+                    ),
+                  ],
+                )
+              ],
+            ),
+           ElevatedButton(
+              onPressed: () async {
+                await ProgressDB.instance.resetTable();
+                SnackbarHelper.show(
                   context,
                   message: "Tüm veriler silindi",
                   backgroundColor: Colors.red,
-              );
-            },
-            child: const Text("Tüm Verileri Sil"),
-          ),
-
-          ElevatedButton(
-            onPressed: () => _selectDate(context),
-            child: Text("Tarih Seç: ${selectedDate.toLocal()}".split(' ')[0]),
-          ),
-          TextField(
-            controller: _valueController,
-            decoration: InputDecoration(
-              labelText: "$selectedMetric Değeri",
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                backgroundColor: Colors.redAccent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text("Tüm Verileri Sil",style: TextStyle(fontSize: 16,color: Colors.white),),
             ),
-            keyboardType: TextInputType.number,
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: _saveData,
-            child: const Text("Veriyi Kaydet"),
-          ),
         ],
       ),
     );
   }
 }
-
-
 
 class GraphPage extends StatefulWidget {
   final List<Map<String, dynamic>> data;

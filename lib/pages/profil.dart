@@ -113,6 +113,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       await _saveProfileData();
                     }
                   } else {
+                    Navigator.pop(context);
                     SnackbarHelper.show(
                       context,
                       message: 'Kamera izni gerekli!',
@@ -140,6 +141,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       await _saveProfileData(); // Veriyi kaydet
                     }
                   } else {
+                    Navigator.pop(context);
                     SnackbarHelper.show(
                       context,
                       message: 'Depolama izni gerekli!',

@@ -1,3 +1,4 @@
+import 'package:fitpil/utils/snackbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
@@ -314,6 +315,8 @@ void _showSaveDialog(BuildContext context) {
               prefs.setString('fatPercentage',
                   _resultController.text); // Save to shared preferences
               Navigator.of(context).pop();
+              Navigator.of(context).pop();
+              SnackbarHelper.show(context, message: "Yağ oranı profilinize kaydedildi",backgroundColor: Colors.green);
             },
             child: const Text("Evet"),
           ),

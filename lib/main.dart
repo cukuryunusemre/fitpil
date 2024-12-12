@@ -11,6 +11,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +23,7 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -143,11 +145,7 @@ class _MainMenuState extends State<MainMenu> {
     setState(() {
       _selectedIndex = index;
     });
-    _pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+    _pageController.jumpToPage(index);
   }
 
   void _onPageChanged(int index) {
@@ -232,29 +230,39 @@ class _MainMenuState extends State<MainMenu> {
       ),
       endDrawer: MenuDrawer(),
       body: PageView(
+        physics: const NeverScrollableScrollPhysics(),
         controller: _pageController,
         onPageChanged: _onPageChanged,
         children: _pages,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.analytics),
-            label: 'Takip',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home, size: 45),
-            label: 'Ana Sayfa',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.dumbbell),
-            label: 'Antrenman',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.lightGreenAccent[700],
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
+      bottomNavigationBar: Container(
+        color: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        child: GNav(
+          gap: 8, // Simge ve yazı arasındaki boşluk
+          activeColor: Colors.lightGreenAccent[700], // Seçili öğe rengi
+          iconSize: 25, // Simge boyutu
+          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+          duration: const Duration(milliseconds: 400), // Animasyon süresi
+          tabBackgroundColor: Colors.lightGreenAccent.withOpacity(0.3), // Seçili öğe arka plan rengi
+          tabs: const [
+            GButton(
+              icon: Icons.analytics,
+              text: 'Takip',
+            ),
+            GButton(
+              icon: Icons.home,
+              text: 'Ana Sayfa',
+            ),
+            GButton(
+              icon: FontAwesomeIcons.dumbbell,
+              text: ' Antrenman',
+            ),
+
+          ],
+          selectedIndex: _selectedIndex,
+          onTabChange: _onItemTapped,
+        ),
       ),
     );
   }
