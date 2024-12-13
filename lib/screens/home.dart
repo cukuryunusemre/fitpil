@@ -2,6 +2,7 @@ import 'package:fitpil/pages/activity_page.dart';
 import 'package:fitpil/pages/calorie_dart.dart';
 import 'package:fitpil/pages/fat_rate.dart';
 import 'package:fitpil/screens/workout_routine.dart';
+import 'package:fitpil/utils/snackbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:pedometer/pedometer.dart'; // Adım sayar paketi
 import '../pages/step_page.dart';
@@ -11,6 +12,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:icons_plus/icons_plus.dart';
 import '../pages/ffmi_calculate.dart';
 import '../pages/onerepmax_calculate.dart';
+import 'package:fitpil/pages/step_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -64,10 +66,7 @@ class _HomePageState extends State<HomePage> {
                               builder: (context) => StepTrackerPage()),
                         );
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text("Lütfen sensör izni verin!")),
-                        );
+                        SnackbarHelper.show(context, message: "Lütfen izin verin",backgroundColor: Colors.red);
                       }
                     },
                     child: Ink(

@@ -151,6 +151,43 @@ class _ProfilePageState extends State<ProfilePage> {
                   }
                 },
               ),
+              if  (_profileImage != null)
+                const Divider(),
+              if (_profileImage != null)
+                ListTile(
+                  leading: const Icon(Icons.delete, color: Colors.redAccent),
+                  title: const Text('Resmi Sil'),
+                  onTap: () async {
+                    Navigator.pop(context); // Alt menüyü kapat
+                    bool? confirm = await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Onay'),
+                          content: const Text('Resmi silmek istediğinizden emin misiniz?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(false), // İptal
+                              child: const Text('Hayır'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(true), // Onay
+                              child: const Text('Evet'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+
+                    if (confirm == true) {
+                      setState(() {
+                        _profileImage = null; // Resmi kaldır
+                      });
+                      final prefs = await SharedPreferences.getInstance();
+                      prefs.remove('profile_image'); // Kaydı sil
+                    }
+                  },
+                ),
             ],
           ),
         );
@@ -334,10 +371,18 @@ class _ProfilePageState extends State<ProfilePage> {
                       radius: 60,
                       backgroundImage: _profileImage != null
                           ? FileImage(_profileImage!)
-                          : const AssetImage('images/user_icon.png')
-                              as ImageProvider,
+                          : null,
+                      child: _profileImage == null
+                          ? const Icon(
+                        Icons.person,
+                        size: 60,
+                        color: Colors.white,
+                      )
+                          : null,
+                      backgroundColor: Colors.grey[300], // Arka plan rengi (isteğe bağlı)
                     ),
                   ),
+
                   Positioned(
                     bottom: 5,
                     right: 5,

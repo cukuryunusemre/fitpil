@@ -206,7 +206,7 @@ class _DataInputPageState extends State<DataInputPage> {
                           maxLength: 4, // Karakter uzunluğu sınırlaması,
                         ),
                     ),
-                    IconButton(onPressed: () => _selectDate(context), icon: Icon(Icons.date_range)),
+                    IconButton(onPressed: () => _selectDate(context), icon: const Icon(Icons.date_range)),
                     ElevatedButton(
                       onPressed: () => _saveData(metric),
                       child: const Text("Kaydet"),

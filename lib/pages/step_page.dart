@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:fl_chart/fl_chart.dart'; // Grafik kütüphanesi
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:pedometer/pedometer.dart';
 
 class StepTrackerPage extends StatefulWidget {
@@ -13,7 +13,7 @@ class StepTrackerPage extends StatefulWidget {
 class _StepTrackerPageState extends State<StepTrackerPage> {
   late Stream<StepCount> _stepCountStream;
   int _todaySteps = 0;
-  List<int> _weeklySteps = List.filled(7, 0); // Haftanın her günü için adımlar
+  List<int> _weeklySteps = List.filled(7, 0);
 
   @override
   void initState() {
@@ -40,44 +40,31 @@ class _StepTrackerPageState extends State<StepTrackerPage> {
 
   Future<void> _loadSavedSteps() async {
     final prefs = await SharedPreferences.getInstance();
-    final lastDate = prefs.getString('lastResetDate');
-    final savedWeeklySteps =
-        prefs.getStringList('weeklySteps')?.map((e) => int.parse(e)).toList() ??
-            List.filled(7, 0);
+    final lastDateStr = prefs.getString('lastResetDate');
+    final savedWeeklySteps = prefs.getStringList('weeklySteps')
+        ?.map((e) => int.tryParse(e) ?? 0)
+        .toList() ??
+        List.filled(7, 0);
 
     final currentDate = DateTime.now();
-    final lastResetDate =
-    lastDate != null ? DateTime.parse(lastDate) : currentDate;
+    DateTime lastResetDate = lastDateStr != null
+        ? DateTime.tryParse(lastDateStr) ?? currentDate
+        : currentDate;
 
-    final daysDifference = currentDate.difference(lastResetDate).inDays;
-    if (daysDifference > 0) {
-      // Her günü tek tek kontrol et ve sıfırla
-      for (int i = 1; i <= daysDifference && i < 7; i++) {
-        int index = (currentDate.weekday - i) % 7;
-        _weeklySteps[index] = 0;
-      }
-    }
-
-
-    // Günlük sıfırlama
     if (lastResetDate.day != currentDate.day) {
-      int previousDayIndex = lastResetDate.weekday - 1;
-      int currentDayIndex = currentDate.weekday - 1;
-
-      setState(() {
-        // Eski günün adımlarını haftalık listeye ekle
-        _weeklySteps[previousDayIndex] = _todaySteps;
-
-        // Günlük adımları sıfırla
-        _todaySteps = 0;
-
-        // Haftalık adımları kaydet
-        prefs.setStringList(
-            'weeklySteps', _weeklySteps.map((e) => e.toString()).toList());
-        prefs.setString('lastResetDate', currentDate.toIso8601String());
-      });
+      // Geçmiş günlerin adımlarını haftalık listeye ekle
+      final dayDifference = currentDate.difference(lastResetDate).inDays;
+      for (int i = 0; i < dayDifference && i < 7; i++) {
+        int dayIndex = (currentDate.weekday - i - 1) % 7;
+        if (dayIndex < 0) dayIndex += 7;
+        _weeklySteps[dayIndex] = i == 0 ? _todaySteps : 0;
+      }
+      _todaySteps = 0;
+      lastResetDate = currentDate;
+      prefs.setStringList('weeklySteps',
+          _weeklySteps.map((steps) => steps.toString()).toList());
+      prefs.setString('lastResetDate', currentDate.toIso8601String());
     } else {
-      // Gün sıfırlanmadıysa kaydedilmiş haftalık adımları yükle
       setState(() {
         _weeklySteps = savedWeeklySteps;
       });
@@ -88,6 +75,7 @@ class _StepTrackerPageState extends State<StepTrackerPage> {
     final prefs = await SharedPreferences.getInstance();
     prefs.setStringList(
         'weeklySteps', _weeklySteps.map((e) => e.toString()).toList());
+    prefs.setString('lastResetDate', DateTime.now().toIso8601String());
   }
 
   @override
@@ -95,6 +83,13 @@ class _StepTrackerPageState extends State<StepTrackerPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Adım Takibi ve Analiz'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+                colors: [Colors.lightBlue, Colors.blue],
+            ),
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -130,59 +125,19 @@ class _StepTrackerPageState extends State<StepTrackerPage> {
                 elevation: 5,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: BarChart(
-                    BarChartData(
-                      borderData: FlBorderData(show: true),
-                      titlesData: FlTitlesData(
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            getTitlesWidget: (value, meta) {
-                              switch (value.toInt()) {
-                                case 0:
-                                  return const Text('Pzt',
-                                      style: TextStyle(fontSize: 12));
-                                case 1:
-                                  return const Text('Sal',
-                                      style: TextStyle(fontSize: 12));
-                                case 2:
-                                  return const Text('Çar',
-                                      style: TextStyle(fontSize: 12));
-                                case 3:
-                                  return const Text('Per',
-                                      style: TextStyle(fontSize: 12));
-                                case 4:
-                                  return const Text('Cum',
-                                      style: TextStyle(fontSize: 12));
-                                case 5:
-                                  return const Text('Cmt',
-                                      style: TextStyle(fontSize: 12));
-                                case 6:
-                                  return const Text('Paz',
-                                      style: TextStyle(fontSize: 12));
-                                default:
-                                  return const Text('');
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                      barGroups: _weeklySteps.asMap().entries.map((entry) {
-                        int index = entry.key;
-                        int steps = entry.value;
-                        return BarChartGroupData(
-                          x: index,
-                          barRods: [
-                            BarChartRodData(
-                              toY: steps.toDouble(),
-                              color: Colors.blueAccent,
-                              width: 15,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ],
-                        );
-                      }).toList(),
-                    ),
+                  child: SfCartesianChart(
+                    primaryXAxis: CategoryAxis(),
+                    title: ChartTitle(text: 'Haftalık Adım Grafiği'),
+                    tooltipBehavior: TooltipBehavior(enable: true),
+                    series: <CartesianSeries<StepData, String>>[
+                      ColumnSeries<StepData, String>(
+                        dataSource: _generateStepData(),
+                        xValueMapper: (StepData data, _) => data.day,
+                        yValueMapper: (StepData data, _) => data.steps,
+                        name: 'Adımlar',
+                        color: Colors.blueAccent,
+                      )
+                    ],
                   ),
                 ),
               ),
@@ -192,4 +147,18 @@ class _StepTrackerPageState extends State<StepTrackerPage> {
       ),
     );
   }
+
+  List<StepData> _generateStepData() {
+    const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+    return List.generate(7, (index) {
+      return StepData(days[index], _weeklySteps[index]);
+    });
+  }
+}
+
+class StepData {
+  final String day;
+  final int steps;
+
+  StepData(this.day, this.steps);
 }

@@ -129,7 +129,6 @@ class _MainMenuState extends State<MainMenu> {
 
   Future<void> _loadProfileData() async {
     final prefs = await SharedPreferences.getInstance();
-
     setState(() {
       profileImage = prefs.getString('profile_image') ?? '';
     });
@@ -180,17 +179,23 @@ class _MainMenuState extends State<MainMenu> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ProfilePage(),
+                            builder: (context) => const ProfilePage(),
                           ),
                         );
+                        _loadProfileData();
                       },
                       child: CircleAvatar(
                         radius: 18,
                         backgroundImage: profileImage.isNotEmpty
-                            ? FileImage(File(
-                                profileImage)) // Profil resmi dosyadan çekilir
-                            : AssetImage('assets/default_user.png')
-                                as ImageProvider, // Varsayılan resim
+                            ? FileImage(File(profileImage))
+                            :null,
+                        child: profileImage.isEmpty
+                            ? const Icon(
+                          Icons.person, // Varsayılan olarak person simgesi
+                          size: 30,
+                          color: Colors.white,
+                        )
+                            : null,
                       ),
                     ),
                   ),
